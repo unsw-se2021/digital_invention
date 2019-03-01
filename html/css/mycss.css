@@ -1,0 +1,12 @@
+.bebastitle {
+    font-family: Bebas;
+}
+
+/* .input-field .prefix.active {
+    color: #4caf50;
+} */
+
+@font-face {
+    font-family: Bebas;
+    src: url(fonts/Bebas.ttf);
+}
