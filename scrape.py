@@ -2,6 +2,7 @@ import requests
 from lxml import html
 import re
 import getpass
+import tabula
 
 LOGIN_URL = "https://webcms3.cse.unsw.edu.au/login"
 
@@ -52,15 +53,20 @@ def main():
             try:
                 # check if there's a PDF in the page
                 pdf_frame = doc.xpath('.//object[@type="application/pdf"]')[0]
-                # we can't deal with PDFs yet
-                print("Error: course outline is a PDF")
-                break
+                outline_url = "https://webcms3.cse.unsw.edu.au" + pdf_frame.get("data")
+                # redirect to the PDF URL
+                result = session_requests.get(outline_url, headers = dict(referer = outline_url))
+                # download the PDF
+                with open("outline.pdf", "wb") as f:
+                    f.write(result.content)
+                # use tabula to convert all tables into a CSV
+                pdf_csv = tabula.convert_into("outline.pdf", "outline.csv", output_format = "csv", pages = "all" multiple_tables = True)
             except IndexError:
                 pass
             pass
         print()
 
-        # parse course outline for assignment dates
+        # parse course outline html for assignment dates
         assignment = {}
         # paragraph = doc.xpath('.//p')
         bullet_point = doc.xpath('.//li')
