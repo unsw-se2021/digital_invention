@@ -64,33 +64,25 @@ def main():
             with open("outline.pdf", "wb") as f:
                 f.write(result.content)
             # use tabula to convert all tables into a CSV
-            tabula.convert_into("outline.pdf", "outline.csv", output_format = "csv", pages = "all", multiple_tables = True)
-            with open("outline.csv") as of:
-                merged = of.readlines()
-   
-        if (not pdf_frame):
-            # paragraph = doc.xpath('.//p')
-            bullet_point = doc.xpath('.//li')
-            table_row = doc.xpath('.//tr')
-            merged = bullet_point + table_row
+            pdf_csv = tabula.convert_into("outline.pdf", "outline.csv", output_format = "csv", pages = "all", multiple_tables = True)
 
         # let's see if there are any assignments or exams
-        # any_assignment = re.search("(?i)\\b(assignment)\\b", doc.text_content())
-        # any_exam = re.search("(?i)\\b(exam)\\b", doc.text_content())
+        any_assignment = re.search("(?i)\\b(assignment)\\b", doc.text_content())
+        any_exam = re.search("(?i)\\b(exam)\\b", doc.text_content())
 
         # parse course outline html for assignment dates
         assignment = {}
         exam = {}
-        due = {}
+        # paragraph = doc.xpath('.//p')
+        bullet_point = doc.xpath('.//li')
+        table_row = doc.xpath('.//tr')
+        merged = bullet_point + table_row
         for line in merged:
-            if (not pdf_frame):
-                line_formatted = line.text_content().strip()
-            else:
-                line_formatted = line
+            line_formatted = line.text_content().strip()
 
             # search for references to assignments
-            # if (any_assignment):
-            assignment_search = re.search("(?i)(?!.*(released|out))(assignment [0-9]+)", line_formatted)
+            # assignment_search = re.search("(?i)(?!.*(released|out))((Assignment|Project)\s?[0-9]*)", line_formatted)
+            assignment_search = re.search("(?i)(?!.*(released|out))(Assignment [0-9]+)", line_formatted)
             if (assignment_search):
                 # search for a reference to a week in the same line
                 week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
@@ -101,8 +93,7 @@ def main():
                     assignment[assignment_search.group(2)] = week_search_2.group(1)
 
             # search for references to exams
-            # if (any_exam):
-            exam_search = re.search("(?i)([\w-]+ exam\\b)", line_formatted)
+            exam_search = re.search("(?i)([\w-]+ Exam\\b)", line_formatted)
             if (exam_search):
                 week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
                 week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
@@ -111,22 +102,11 @@ def main():
                 elif (week_search_2):
                     exam[exam_search.group(1)] = week_search_2.group(1)
 
-            # search for references to due dates
-            # if (any_due):
-            due_search = re.search("(?i)([\w-]+ [0-9]+ due\\b)", line_formatted)
-            if (due_search):
-                week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
-                week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
-                if (week_search_1):
-                    due[due_search.group(1)] = week_search_1.group(1)
-                elif (week_search_2):
-                    due[due_search.group(1)] = week_search_2.group(1)
-
             # search everywhere to see if there's a final exam
-            # final_exam_search_1 = re.search("(?i)Exam Period", doc.text_content())
-            # final_exam_search_2 = re.search("(?i)Final Exam\\b", doc.text_content())
-            # if (final_exam_search_1 or final_exam_search_2):
-            #     exam["Final Exam"] = "Exam Period"
+            final_exam_search_1 = re.search("(?i)Exam Period", doc.text_content())
+            final_exam_search_2 = re.search("(?i)Final Exam\\b", doc.text_content())
+            if (final_exam_search_1 or final_exam_search_2):
+                exam["Final Exam"] = "Exam Period"
 
         print("Assignment dates:")
         if (not assignment):
@@ -142,14 +122,6 @@ def main():
         else:
             for e in exam:
                 print(e + " - Week " + exam[e])
-        print()
-
-        print("Due dates:")
-        if (not due):
-            print("No due dates found")
-        else:
-            for d in due:
-                print(d + " - Week " + due[d])
         print()
         
         break
