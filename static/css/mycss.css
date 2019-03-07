@@ -1,0 +1,36 @@
+.bebastitle {
+    font-family: Bebas;
+}
+
+/* .input-field .prefix.active {
+    color: #4caf50;
+} */
+
+div.footer {
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    bottom: 0px;
+    padding-bottom: 22px;
+    padding-top: 22px;
+    opacity: 0.2;
+	transition:.5s;
+}
+
+button.full_width {
+    width: 100%;
+}
+
+div.bottom_space {
+    padding-bottom: 44px;
+}
+
+div.footer:hover {
+	opacity: 1;
+	transition:.5s;
+}
+
+@font-face {
+    font-family: Bebas;
+    src: url(fonts/Bebas.ttf);
+}

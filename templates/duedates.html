@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row"></div>
+<div class="row">
+    <h5 class="center col l12 s8 offset-s2">Due dates:</h5>
+</div>
+<div class="row">
+    <div class="col l4 s8 offset-l4 offset-s2">
+        <div class="row">
+            <div class="col l4 s4 center">Sort by:</div>
+            <div class="col l4 s4">
+                <label>
+                    <input class="with-gap" name="group1" type="radio" checked="checked" />
+                    <span>Course</span>
+                </label>
+            </div>
+            <div class="col l4 s4">
+                <label>
+                    <input class="with-gap" name="group1" type="radio"/>
+                    <span>Week</span>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <h6>COMP1511:</h6>
+            <li>Week 1: Lab 1</li>
+            <li>Week 2: Lab 2</li>
+            <li>Week 3: Lab 3</li>
+            <li>Week 4: Lab 4</li>
+            <li>Week 5: Lab 5</li>
+            <li>Week 6: Lab 6</li>
+            <li>Week 7: Lab 7, Assignment 1</li>
+            <li>Week 8: Lab 8</li>
+            <li>Week 9: Lab 9</li>
+            <li>Week 10: Lab 10, Assignment 2</li>
+            <li>Exam period: Final exam</li>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <h5 class="header center col l12 s8 offset-s2">Export to:</h5>
+</div>
+<div class="row">
+    <div class="col l4 s8 offset-l4 offset-s2 center">
+        <div class="row">
+            <div class="col l6 s6">
+                <button class="btn waves-effect waves-light full_width" type="submit" name="action">Google calendar</button>
+            </div>
+            <div class="col l6 s6">
+                <button class="btn waves-effect waves-light full_width" type="submit" name="action">iCal</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- <div class="footer">
+    <button class="btn waves-effect waves-light" type="submit" name="action">Next
+        <i class="material-icons right">play_arrow</i>
+    </button>
+</div> -->
+
+{% endblock content %}
