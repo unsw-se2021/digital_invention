@@ -7,11 +7,20 @@ import tabula
 BASE_URL = "https://webcms3.cse.unsw.edu.au"
 LOGIN_URL = BASE_URL + "/login"
 
+def navigate_to(session, url):
+    if url[:1] == "/":
+        url = BASE_URL + url
+
+    result = session.get(url, headers = dict(referer = url))
+    doc = html.fromstring(result.content)
+
+    return doc
+
 def main():
-    session_requests = requests.session()
+    session = requests.session()
 
     # extract authenticity token
-    result = session_requests.get(LOGIN_URL)
+    result = session.get(LOGIN_URL)
     doc = html.fromstring(result.text)
     authenticity_token = list(set(doc.xpath("//input[@name='csrf_token']/@value")))[0]
 
@@ -24,42 +33,55 @@ def main():
     print()
 
     # perform login
-    result = session_requests.post(LOGIN_URL, data = payload, headers = dict(referer = LOGIN_URL))
+    result = session.post(LOGIN_URL, data = payload, headers = dict(referer = LOGIN_URL))
 
     # get list of courses
     dashboard_url = BASE_URL + "/dashboard"
-    result = session_requests.get(dashboard_url, headers = dict(referer = dashboard_url))
-    doc = html.fromstring(result.content)
-    # course_url = {}
+    # result = session.get(dashboard_url, headers = dict(referer = dashboard_url))
+    # doc = html.fromstring(result.content)
+    doc = navigate_to(session, dashboard_url)
+
+    course = []
     print("Your courses:")
     nav = doc.xpath('.//ul[@class="nav navbar-nav"]')[0]
     for item in nav:
-        # course_url[item.text_content()] = BASE_URL + item[0].get("href") + "/outline"
+        course.append({"name": item.text_content(), "url": item[0].get("href")})
         print(item.text_content())
     print()
 
-    while True:
-    # for c in course_url:
+    # while True:
+    for c in course:
+        print("Due dates for " + c["name"] + ":")
         # get course outline
-        outline_url = input("Enter course outline URL: ")
-        print()
-        # outline_url = course_url[c]
-        result = session_requests.get(outline_url, headers = dict(referer = outline_url))
-        doc = html.fromstring(result.content)
+        # curr_outline_url = input("Enter course outline URL: ")
+        # print()
+        # curr_outline_url = course_url[c]
+        curr_course_url = BASE_URL + c["url"]
+        # result = session.get(curr_course_url, headers = dict(referer = curr_course_url))
+        # doc = html.fromstring(result.content)
+        doc = navigate_to(session, curr_course_url)
+
+        curr_outline_url = doc.xpath('.//a[text()="Course Outline"]')[0].get("href")
+
+        # result = session.get(curr_outline_url, headers = dict(referer = curr_outline_url))
+        # doc = html.fromstring(result.content)
+        doc = navigate_to(session, curr_outline_url)
 
         # check if there's a frame in the course outline page
         doc_frame = doc.xpath('.//iframe')
         # check if there's a PDF in the page
         pdf_frame = doc.xpath('.//object[@type="application/pdf"]')
+
         if (doc_frame):
-            outline_url = doc_frame[0].get("src")
+            curr_outline_url = doc_frame[0].get("src")
             # redirect to the frame URL
-            result = session_requests.get(outline_url, headers = dict(referer = outline_url))
-            doc = html.fromstring(result.content)
+            # result = session.get(curr_outline_url, headers = dict(referer = curr_outline_url))
+            # doc = html.fromstring(result.content)
+            doc = navigate_to(session, curr_outline_url)
         elif (pdf_frame):
-            outline_url = BASE_URL + pdf_frame[0].get("data")
+            curr_outline_url = BASE_URL + pdf_frame[0].get("data")
             # redirect to the PDF URL
-            result = session_requests.get(outline_url, headers = dict(referer = outline_url))
+            result = session.get(curr_outline_url, headers = dict(referer = curr_outline_url))
             # download the PDF
             with open("outline.pdf", "wb") as f:
                 f.write(result.content)
@@ -81,7 +103,7 @@ def main():
         # parse course outline html for assignment dates
         assignment = {}
         exam = {}
-        due = {}
+        # due = {}
         for line in merged:
             if (not pdf_frame):
                 line_formatted = line.text_content().strip()
@@ -106,6 +128,7 @@ def main():
             if (exam_search):
                 week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
                 week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
+                print(line_formatted + "\n~~~")
                 if (week_search_1):
                     exam[exam_search.group(1)] = week_search_1.group(1)
                 elif (week_search_2):
@@ -113,14 +136,14 @@ def main():
 
             # search for references to due dates
             # if (any_due):
-            due_search = re.search("(?i)([\w-]+ [0-9]+ due\\b)", line_formatted)
-            if (due_search):
-                week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
-                week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
-                if (week_search_1):
-                    due[due_search.group(1)] = week_search_1.group(1)
-                elif (week_search_2):
-                    due[due_search.group(1)] = week_search_2.group(1)
+            # due_search = re.search("(?i)([\w-]+ [0-9]+ due\\b)", line_formatted)
+            # if (due_search):
+            #     week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
+            #     week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
+            #     if (week_search_1):
+            #         due[due_search.group(1)] = week_search_1.group(1)
+            #     elif (week_search_2):
+            #         due[due_search.group(1)] = week_search_2.group(1)
 
             # search everywhere to see if there's a final exam
             # final_exam_search_1 = re.search("(?i)Exam Period", doc.text_content())
@@ -144,19 +167,20 @@ def main():
                 print(e + " - Week " + exam[e])
         print()
 
-        print("Due dates:")
-        if (not due):
-            print("No due dates found")
-        else:
-            for d in due:
-                print(d + " - Week " + due[d])
-        print()
+        # print("Due dates:")
+        # if (not due):
+        #     print("No due dates found")
+        # else:
+        #     for d in due:
+        #         print(d + " - Week " + due[d])
+        # print()
         
-        break
+        # break
 
     # log out
     logout_url = BASE_URL + "/logout"
-    result = session_requests.get(logout_url, headers = dict(referer = logout_url))
+    # result = session.get(logout_url, headers = dict(referer = logout_url))
+    navigate_to(session, logout_url)
     print("Logged out")
 
 if __name__ == '__main__':
