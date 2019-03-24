@@ -1,5 +1,5 @@
 from __future__ import print_function
-from apiclient.discovery import build
+from apiclient import discovery
 from httplib2 import Http
 from oauth2client import file, client, tools
 
@@ -8,12 +8,34 @@ from csv_ical import Convert
 import csv
 
 def googleCalender():
-    return None
+    SCOPES = 'https://www.googleapis.com/auth/calendar'
+    store = file.Storage('storage.json')
+    creds = store.get()
+    if not creds or creds.invalid:
+        flow = client.flow_from_clientsecrets('client_secrets.json', SCOPES)
+        creds = tools.run_flow(flow, store)
+    GCAL = discovery.build('calendar', 'v3', http=creds.authorize(Http()))
 
+    GMT_OFF = '+11:00'      # PDT/MST/GMT-7
+    EVENT = {
+        'summary': 'Google I/O 2015',
+        'location': '800 Howard St., San Francisco, CA 94103',
+        'description': 'A chance to hear more about Google\'s developer products.',
+        'start': {
+        'dateTime': '2019-03-25T09:00:00-07:00',
+        'timeZone': 'Australia/Sydney',
+        },
+        'end': {
+        'dateTime': '2019-03-15T17:00:00-07:00',
+        'timeZone': 'Australia/Sydney',
+        }
+    }
+    e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=EVENT).execute()
 def getEventObject():
+    EVENT
     return None
 
-# Convert to Google Calender
+# Convert to csv
 def calCsv(string, split):
     with open('calender.csv', 'w') as csvFile:
         csvWriter = csv.writer(csvFile)
@@ -86,3 +108,4 @@ def createCalender(string, outFile, split):
 if __name__ == '__main__':
     test_string = 'Final exam1,05/03/13,10:00,12:00,Worth 20%,UNSW,Final exam2,05/03/13,9:00,12:00,Worth 20%,UNSW,Final exam3,05/03/13,10:00,12:00,Worth 20%,UNSW,'
     createCalender(test_string, 'ical', 6)
+    #googleCalender()
