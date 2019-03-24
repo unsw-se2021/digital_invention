@@ -86,7 +86,7 @@ def main():
             with open("outline.pdf", "wb") as f:
                 f.write(result.content)
             # use tabula to convert all tables into a CSV
-            tabula.convert_into("outline.pdf", "outline.csv", output_format = "csv", pages = "all", multiple_tables = True)
+            tabula.convert_into("outline.pdf", "outline.csv", output_format = "csv", pages = "all", multiple_tables = True, java_options = "-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider")
             with open("outline.csv") as of:
                 merged = of.readlines()
    
@@ -128,7 +128,6 @@ def main():
             if (exam_search):
                 week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
                 week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
-                print(line_formatted + "\n~~~")
                 if (week_search_1):
                     exam[exam_search.group(1)] = week_search_1.group(1)
                 elif (week_search_2):
