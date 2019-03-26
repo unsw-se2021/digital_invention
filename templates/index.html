@@ -8,27 +8,31 @@
     </div>
 </div>
 <div class="row">
-    <form class="col l4 s8 offset-l4 offset-s2">
+    <form class="col l4 s8 offset-l4 offset-s2" method="POST">
         <div class="row">
             <div class="input-field">
                 <i class="material-icons prefix">account_box</i>
-                <input id="zid" type="text">
+                <input id="zid" type="text" name="zID" value="{{request.form.zID}}">
                 <label for="zid">zID</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field">
                 <i class="material-icons prefix">security</i>
-                <input id="password" type="password">
-                <label for="password">Password</label>
+                <input id="zpass" type="Password" name="zPass" value="{{request.form.zPass}}">
+                <label for="zpass">zPass</label>
             </div>
         </div>
         <div class="row center">
-            <a class="waves-effect waves-light btn" href="{{ url_for('courses') }}">Log in
-                <i class="material-icons right">send</i>
-            </a>
+            <!-- <i class="material-icons right">send</i> CANNOT GET THE ARROW INSIDE LOGIN BUTTON -->
+            <input class="waves-effect waves-light btn" value="Log In" type="submit">
         </div>
     </form>
+</div>
+<div class="row">
+    <div class="center col l12 s8 offset-s2">
+        <h5>{{error}}</h5>
+    </div>
 </div>
 
 {% endblock %}

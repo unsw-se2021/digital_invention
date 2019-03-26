@@ -26,14 +26,15 @@ def main():
 
     # get and compile login details
     payload = {
-        "zid": input("Enter zID: "), 
-        "password": getpass.getpass("Enter password: "), 
+        "zid": input("Enter zID: "),
+        "password": getpass.getpass("Enter password: "),
         "csrf_token": authenticity_token
     }
     print()
 
     # perform login
     result = session.post(LOGIN_URL, data = payload, headers = dict(referer = LOGIN_URL))
+    print(result)
 
     # get list of courses
     dashboard_url = BASE_URL + "/dashboard"
@@ -89,7 +90,7 @@ def main():
             tabula.convert_into("outline.pdf", "outline.csv", output_format = "csv", pages = "all", multiple_tables = True, java_options = "-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider")
             with open("outline.csv") as of:
                 merged = of.readlines()
-   
+
         if (not pdf_frame):
             # paragraph = doc.xpath('.//p')
             bullet_point = doc.xpath('.//li')
@@ -173,7 +174,7 @@ def main():
         #     for d in due:
         #         print(d + " - Week " + due[d])
         # print()
-        
+
         # break
 
     # log out

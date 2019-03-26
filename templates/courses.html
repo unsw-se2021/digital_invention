@@ -10,32 +10,10 @@
         <div class="row">
             <p>
                 <label>
+                    {{% for course in courses %}}
                     <input type="checkbox" class="filled-in" />
-                    <span>COMP1911</span>
-                </label>
-            </p>
-        </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" checked="checked" />
-                    <span>COMP1511</span>
-                </label>
-            </p>
-        </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" />
-                    <span>SENG2021</span>
-                </label>
-            </p>
-        </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" />
-                    <span>COMP2111</span>
+                    <span>{{% course["name"] %}}</span>
+                    {{% endfor %}}
                 </label>
             </p>
         </div>
