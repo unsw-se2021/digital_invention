@@ -49,7 +49,7 @@ def main():
         course.append({"name": item.text_content(), "url": item[0].get("href")})
         print(item.text_content())
     print()
-
+    #course.append({"name": "MATH1081", "url": "https://www.maths.unsw.edu.au/sites/default/files/math1081-t1_2019.pdf"})
     # while True:
     for c in course:
         print("Due dates for " + c["name"] + ":")
@@ -113,11 +113,12 @@ def main():
 
             # search for references to assignments
             # if (any_assignment):
+            week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
+            week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
             assignment_search = re.search("(?i)(?!.*(released|out))(assignment [0-9]+)", line_formatted)
             if (assignment_search):
                 # search for a reference to a week in the same line
-                week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
-                week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
+
                 if (week_search_1):
                     assignment[assignment_search.group(2)] = week_search_1.group(1)
                 elif (week_search_2):
@@ -127,8 +128,8 @@ def main():
             # if (any_exam):
             exam_search = re.search("(?i)([\w-]+ exam\\b)", line_formatted)
             if (exam_search):
-                week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
-                week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
+                #week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
+                #week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
                 if (week_search_1):
                     exam[exam_search.group(1)] = week_search_1.group(1)
                 elif (week_search_2):

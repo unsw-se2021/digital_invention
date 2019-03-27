@@ -5,6 +5,7 @@ from Course import Course
 BASE_URL        = "https://webcms3.cse.unsw.edu.au"
 LOGIN_URL       = BASE_URL + "/login"
 DASHBOARD_URL   = BASE_URL + "/dashboard"
+LOGOUT_URL      = BASE_URL + "/logout"
 
 class UserSystem(object):
     def __init__(self, user):
@@ -44,6 +45,9 @@ class UserSystem(object):
         return courses
 
     # Log Out
+    def logOut(self):
+        navigateTo(LOGOUT_URL)
+        return "Logged Out!"
 
 
 if __name__ == "__main__":

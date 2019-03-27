@@ -2,6 +2,8 @@
 
 class Course(object):
     def __init__(self, name, url, do):
-        self.name  = name
-        self.url   = url
-        self.do  = do
+        self.name         = name
+        self.url          = url
+        self.do           = do
+        self.assignment   = {}
+        self.exam         = {}
