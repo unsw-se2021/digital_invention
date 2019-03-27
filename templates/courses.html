@@ -6,32 +6,40 @@
     <h5 class="center col l12 s8 offset-s2">Raisin will find dates for the following courses:</h5>
 </div>
 <div class="row">
-    <form class="col l4 s8 offset-l4 offset-s2">
+    <form class="col l4 s8 offset-l4 offset-s2" method="POST">
+        {% for course in courses %}
         <div class="row">
             <p>
                 <label>
-                    {{% for course in courses %}}
-                    <input type="checkbox" class="filled-in" />
-                    <span>{{% course["name"] %}}</span>
-                    {{% endfor %}}
+
+                    <input type="checkbox" class="filled-in" name="{{ course.name }}" value="True"/>
+                    <span>{{ course.name }}</span>
+                    <br>
+
                 </label>
             </p>
         </div>
+        {% endfor %}
         <div class="divider"></div>
         <div class="row">
             <p>
                 <label>
-                    <input type="checkbox" class="filled-in" />
+                    <input type="checkbox" class="filled-in" name="all" value="True" />
                     <span>Select all</span>
                 </label>
             </p>
         </div>
         <div class="row center">
-            <a class="btn waves-effect waves-light" href="{{ url_for('processing') }}">Next
-                <i class="material-icons right">send</i>
-            </a>
+            <i class="material-icons right">send</i>
+            <input class="waves-effect waves-light btn" value="Next" type="submit">
         </div>
     </form>
+</div>
+
+<div class="row">
+    <div class="center col l12 s8 offset-s2">
+        <h5>{{error}}</h5>
+    </div>
 </div>
 
 {% endblock %}

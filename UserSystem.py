@@ -1,5 +1,6 @@
 # User System Class
 from User import *
+from Course import Course
 
 BASE_URL        = "https://webcms3.cse.unsw.edu.au"
 LOGIN_URL       = BASE_URL + "/login"
@@ -36,7 +37,9 @@ class UserSystem(object):
         #print("Your courses:")
         nav = doc.xpath('.//ul[@class="nav navbar-nav"]')[0]
         for item in nav:
-            courses.append({"name": item.text_content(), "url": item[0].get("href")})
+            #courses.append({"name": item.text_content(), "url": item[0].get("href"), "do": False})
+            #course = Course(item.text_content(), item[0].get("href"), False)
+            courses.append(Course(item.text_content(), item[0].get("href"), False))
             #print(item.text_content())
         return courses
 

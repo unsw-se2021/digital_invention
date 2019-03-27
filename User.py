@@ -10,7 +10,7 @@ class User():
     def __init__(self, zID, zPass):
         self._zID       = zID
         self._zPass     = zPass
-        self._courses   = {}
+        self._courses   = []
         self._session   = None
 
     @property
