@@ -7,7 +7,7 @@ from urllib.error import HTTPError, URLError
 
 subjectCode1 = 'COMP'
 subjectCode2 = 'cs'
-courseCode  = '1511'
+courseCode  = '3121'
 year        = '19T1'
 BASE_URL    = 'https://webcms3.cse.unsw.edu.au'
 BASE_URL_2  = 'https://cgi.cse.unsw.edu.au'
@@ -95,17 +95,24 @@ def genLink(base, forward):
 
 
 #html = Urlopen('http://cgi.cse.unsw.edu.au/~' + subjectCode + courseCode + '/' + )
-refUrl = followRefresh(BASE_URL + '/' + subjectCode1 + courseCode + '/' + year)
-#refUrl = followRefresh(BASE_URL_2 + '/' + '~' + subjectCode2 + courseCode + '/')
+#subjectCode1 = input("enter course code e.g. COMP1511: ")
+searchTerm = input("enter search term e.g. outline: ")
+try:
+    refUrl = followRefresh(BASE_URL + '/' + subjectCode1 + courseCode + '/' + year)
+    html = Urlopen(refUrl)
+    bs = soup(html.read(), 'lxml')
+except:
+    refUrl = followRefresh(BASE_URL_2 + '/' + '~' + subjectCode2 + courseCode + '/')
 #print(refUrl)
-html = Urlopen(refUrl)
+    html = Urlopen(refUrl)
 #html = Urlopen('https://www.google.com')
-bs = soup(html.read(), 'lxml')
+    bs = soup(html.read(), 'lxml')
 #print(bs.body)
 
 for ass in bs.find_all('a'):
     #print(ass['href'].partition('/'))
-    if 'outline' in str(ass).lower():
+
+    if searchTerm in str(ass).lower():
         #print(ass['href'])
         print(genLink(refUrl, ass['href']))
     #print(genLink(refUrl, ass['href']))
