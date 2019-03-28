@@ -58,7 +58,7 @@ def courses(id):
             if err == True:
                 return render_template('courses.html', id=user.zID, courses=user.courses, error=ERROR_STATEMENT)
             else:
-                return redirect(url_for('processing', id=user.zID))
+                return redirect(url_for('events', id=user.zID))
 
 
     except Exception as e:
@@ -66,6 +66,12 @@ def courses(id):
         return render_template('courses.html', id=user.zID, courses=user.courses, error=e)
 
     return render_template('courses.html', id=user.zID, courses=user.courses, error=error)
+
+
+@app.route('/events/<id>', methods=["GET", "POST"]')
+def events(id):
+    return render_template('events.html', id=user.zID)
+
 
 @app.route('/processing/<id>', methods=["GET", "POST"])
 def processing(id):
