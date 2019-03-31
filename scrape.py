@@ -52,8 +52,6 @@ def main():
     #course.append({"name": "MATH1081", "url": "https://www.maths.unsw.edu.au/sites/default/files/math1081-t1_2019.pdf"})
     # while True:
     for c in course:
-        if not c.selected:
-            break
         print("Due dates for " + c["name"] + ":")
         # get course outline
         curr_course_url = BASE_URL + c["url"]

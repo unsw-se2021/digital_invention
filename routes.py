@@ -22,29 +22,43 @@ def login():
 @app.route("/courses", methods=["GET", "POST"])
 @login_required
 def courses():
-    courses = system.get_courses(current_user.id)
-    if request.method == "POST":
-        for c in courses:
-            if request.form.get(c.name):
-                c.selected = True
+    try:
+        courses = system.get_courses(current_user.id)
+        if request.method == "POST":
+            for c in courses:
+                if request.form.get(c.name):
+                    c.selected = True
 
-        return redirect(url_for("events"))
+            return redirect(url_for("events"))
 
-    return render_template("courses.html", courses = courses)
+        return render_template("courses.html", courses = courses)
+    except:
+        system.log_out_user(current_user.id)
+        return redirect(url_for("login"))
 
 @app.route('/events', methods=["GET", "POST"])
+@login_required
 def events():
-    if request.method == "POST":
-        # write to necessary stuff
-        return redirect(url_for("duedates"))
+    try:
+        if request.method == "POST":
+            # write to necessary stuff
+            return redirect(url_for("duedates"))
 
-    return render_template("events.html")
+        return render_template("events.html")
+    except:
+        system.log_out_user(current_user.id)
+        return redirect(url_for("login"))
 
 @app.route('/duedates')
+@login_required
 def duedates():
-    system.get_due_dates(current_user.id)
-    # print(current_user.id)
-    # system.log_out_user(current_user.id)
-    # logout_user()
-    # print(current_user.id)
-    return render_template('duedates.html')
+    try:
+        system.get_due_dates(current_user.id)
+        # print(current_user.id)
+        # system.log_out_user(current_user.id)
+        # logout_user()
+        # print(current_user.id)
+        return render_template('duedates.html')
+    except:
+        system.log_out_user(current_user.id)
+        return redirect(url_for("login"))
