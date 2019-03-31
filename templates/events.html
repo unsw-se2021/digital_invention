@@ -1,50 +1,62 @@
 {% extends "base.html" %}
 {% block content %}
-
-<div class="row"></div>
-<div class="row">
-    <h5 class="center col l12 s8 offset-s2">Raisin will include dates for the following events:</h5>
-</div>
-<div class="row">
-    <form class="col l4 s8 offset-l4 offset-s2" method="POST">
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" name="assignments" checked="checked"/>
-                    <span>Assignments</span>
-                </label>
-            </p>
+<container id="content" class="content">
+    <div class="row">
+        <h5 class="center col l12 s8 offset-s2">Raisin will include dates for the following events:</h5>
+    </div>
+    <div class="row">
+        <form class="col l4 s8 offset-l4 offset-s2" method="POST">
+            <div class="row">
+                <p>
+                    <label>
+                        <input type="checkbox" class="filled-in" name="assignments" checked="checked"/>
+                        <span>Assignments</span>
+                    </label>
+                </p>
+            </div>
+            <div class="row">
+                <p>
+                    <label>
+                        <input type="checkbox" class="filled-in" name="exams" checked="checked"/>
+                        <span>Exams</span>
+                    </label>
+                </p>
+            </div>
+            <div class="row">
+                <p>
+                    <label>
+                        <input type="checkbox" class="filled-in" name="milestones" checked="checked"/>
+                        <span>Project milestones</span>
+                    </label>
+                </p>
+            </div>
+            <div class="row">
+                <p>
+                    <label>
+                        <input type="checkbox" class="filled-in" name="labs" checked="checked"/>
+                        <span>Labs</span>
+                    </label>
+                </p>
+            </div>
+            <div class="row center">
+                <button class="btn waves-effect waves-light" type="submit" name="action" onclick="showLoader()">Next
+                    <i class="material-icons right">send</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</container>
+<container id="loader" class="loader">
+    <div class="row">
+        <div class="row"></div>
+        <div class="col l4 s8 offset-l4 offset-s2 center">
+            <h5>Processing...</h5>
+            <div class="progress">
+                <div class="indeterminate"></div>
+            </div>
+            <p>This could take a while. Please wait.</p>
         </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" name="exams" checked="checked"/>
-                    <span>Exams</span>
-                </label>
-            </p>
-        </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" name="milestones" checked="checked"/>
-                    <span>Project milestones</span>
-                </label>
-            </p>
-        </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" name="labs" checked="checked"/>
-                    <span>Labs</span>
-                </label>
-            </p>
-        </div>
-        <div class="row center">
-            <button class="btn waves-effect waves-light" type="submit" name="action">Next
-                <i class="material-icons right">send</i>
-            </button>
-        </div>
-    </form>
-</div>
-
+    </div>
+</container>
+<script type="text/javascript" src="{{ url_for('static', filename='js/loader.js') }}"></script>
 {% endblock %}

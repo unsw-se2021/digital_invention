@@ -30,6 +30,10 @@ div.footer:hover {
 	transition:.5s;
 }
 
+container.loader {
+    display: none;
+}
+
 @font-face {
     font-family: Bebas;
     src: url(fonts/Bebas.ttf);

@@ -17,7 +17,7 @@ def login():
             return redirect(url_for("courses"))
         else:
             error = True
-    return render_template("index.html", error = error)
+    return render_template("login.html", error = error)
 
 @app.route("/courses", methods=["GET", "POST"])
 @login_required
@@ -42,6 +42,7 @@ def events():
     try:
         if request.method == "POST":
             # write to necessary stuff
+            system.get_due_dates(current_user.id)
             return redirect(url_for("duedates"))
 
         return render_template("events.html")
@@ -53,7 +54,7 @@ def events():
 @login_required
 def duedates():
     try:
-        system.get_due_dates(current_user.id)
+        # system.get_due_dates(current_user.id)
         # print(current_user.id)
         # system.log_out_user(current_user.id)
         # logout_user()
