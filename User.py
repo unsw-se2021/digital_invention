@@ -1,31 +1,26 @@
 # User class
-import requests
-from lxml import html
+from flask_login import UserMixin
 
-BASE_URL        = "https://webcms3.cse.unsw.edu.au"
-LOGIN_URL       = BASE_URL + "/login"
-DASHBOARD_URL   = BASE_URL + "/dashboard"
-
-class User():
-    def __init__(self, zID, zPass):
-        self._zID       = zID
-        self._zPass     = zPass
-        self._courses   = []
-        self._session   = None
+class User(UserMixin):
+    def __init__(self, id, password):
+        self._id = id
+        self._password = password
+        self._courses = []
+        self._session = None
 
     @property
-    def zID(self):
-        return self._zID
-    @zID.setter
-    def zID(self, zID):
-        self._zID = zID
+    def id(self):
+        return self._id
+    @id.setter
+    def id(self, id):
+        self._id = id
 
     @property
-    def zPass(self):
-        return self._zPass
-    @zPass.setter
-    def zPass(self, zPass):
-        self._zPass = zPass
+    def password(self):
+        return self._password
+    @password.setter
+    def password(self, password):
+        self._password = password
 
     @property
     def courses(self):
@@ -40,32 +35,3 @@ class User():
     @session.setter
     def session(self, session):
         self._session = session
-
-
-
-    # Authenticate User and save session
-    def authenticate(self):
-        session = requests.session()
-        result = session.get(LOGIN_URL)
-        doc = html.fromstring(result.text)
-        authenticity_token = list(set(doc.xpath("//input[@name='csrf_token']/@value")))[0]
-        payload = {"zid": self._zID, "password": self._zPass, "csrf_token": authenticity_token}
-        result = session.post(LOGIN_URL, data = payload, headers = dict(referer = LOGIN_URL))
-        #print(html.fromstring(result.text))
-        check = False
-        for r in result.history:
-            if LOGIN_URL == (r.url):
-                check = True
-        self._session = session
-        return check
-
-
-
-def white_test():
-    test_user = User('z5170340', 'FakePassword')
-    print(test_user.authenticate())
-    #print(test_user.zID, test_user.zPass)
-
-if (__name__ == "__main__"):
-    print("Running Test!")
-    white_test()

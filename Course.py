@@ -1,9 +1,9 @@
 # Course Class
 
-class Course(object):
-    def __init__(self, name, url, do):
-        self.name         = name
-        self.url          = url
-        self.do           = do
-        self.assignment   = {}
-        self.exam         = {}
+class Course():
+    def __init__(self, name, url, selected):
+        self.name = name
+        self.url = url
+        self.selected = selected
+        self.assignment = {}
+        self.exam = {}

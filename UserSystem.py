@@ -1,58 +1,61 @@
 # User System Class
-from User import *
-from Course import Course
+from flask import request, render_template, url_for, redirect
+from flask_login import UserMixin, login_manager, login_required, login_user, current_user, logout_user
+import requests
+from lxml import html
+from User import User
 
-BASE_URL        = "https://webcms3.cse.unsw.edu.au"
-LOGIN_URL       = BASE_URL + "/login"
-DASHBOARD_URL   = BASE_URL + "/dashboard"
-LOGOUT_URL      = BASE_URL + "/logout"
+BASE_URL = "https://webcms3.cse.unsw.edu.au"
+LOGIN_URL = BASE_URL + "/login"
+LOGOUT_URL = BASE_URL + "/logout"
 
-class UserSystem(object):
-    def __init__(self, user):
-        self._user = user
+class UserSystem():
+    def __init__(self):
+        self._users = {}
 
-    @property
-    def user(self):
-        return self._user
-    @user.setter
-    def user(self, user):
-        self._user = user
+    def add_user(self, id, password):
+        new_user = User(id, password)
+        self._users[id] = new_user
 
+    def authenticate_user(self, id, password):
+        session = requests.session()
+        result = session.get(LOGIN_URL)
+        doc = html.fromstring(result.text)
+        authenticity_token = list(set(doc.xpath("//input[@name='csrf_token']/@value")))[0] # change
+        payload = {"zid": id, "password": password, "csrf_token": authenticity_token}
+        result = session.post(LOGIN_URL, data = payload, headers = dict(referer = LOGIN_URL))
+        for r in result.history:
+            if LOGIN_URL == (r.url):
+                if id not in self._users:
+                    self.add_user(id, password)
+                user = self._users[id]
+                login_user(user)
+                user.session = session
+                return True
+        return False
 
+    def get_user(self, id):
+        if id in self._users:
+            return self._users[id]
+        else:
+            return None
 
+    def log_out_user(self, id):
+        self.navigateTo(id, LOGOUT_URL)
+        logout_user(id)
 
-    def navigateTo(self, url):
+    def navigateTo(self, id, url):
+        result = self.getResult(id, url)
+        return html.fromstring(result.content)
+
+    def getResult(self, id, url):
         if url[:1] == "/":
             url = BASE_URL + url
 
-        result = self.user._session.get(url, headers = dict(referer = url))
-        doc = html.fromstring(result.content)
+        return self._users[id].session.get(url, headers = dict(referer = url))
 
-        return doc
+    def add_courses(self, id, courses):
+        self._users[id].courses = courses
 
-    # Populate Courses
-    def populateCourses(self):
-        doc = self.navigateTo(DASHBOARD_URL)
-
-        courses = []
-        #print("Your courses:")
-        nav = doc.xpath('.//ul[@class="nav navbar-nav"]')[0]
-        for item in nav:
-            #courses.append({"name": item.text_content(), "url": item[0].get("href"), "do": False})
-            #course = Course(item.text_content(), item[0].get("href"), False)
-            courses.append(Course(item.text_content(), item[0].get("href"), False))
-            #print(item.text_content())
-        return courses
-
-    # Log Out
-    def logOut(self):
-        navigateTo(LOGOUT_URL)
-        return "Logged Out!"
-
-
-if __name__ == "__main__":
-    test_user = User('z5170340', 'Fake')
-    print(test_user.authenticate())
-    test_user_system = UserSystem(test_user)
-    #test_user_system = UserSystem(test_user)
-    #print(test_user_system.authenticate())
+    def get_courses(self, id):
+        return self._users[id].courses

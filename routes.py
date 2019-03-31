@@ -1,97 +1,50 @@
+from server import app, system, login_manager
 from flask import Flask, render_template, request, url_for, redirect
-from User import User
-from UserSystem import UserSystem
+from flask_login import UserMixin, login_user, login_required, current_user, logout_user
 
+@login_manager.user_loader
+def load_user(id):
+    return system.get_user(id)
 
-app = Flask(__name__)
-user = None
-userSystem = None
-ERROR_STATEMENT = "What you trying to do bruh!"
+@app.route("/", methods=["GET", "POST"])
+def login():
+    error = False
+    if request.method == "POST":
+        id = request.form["zid"]
+        password = request.form["password"]
+        if system.authenticate_user(id, password):
+            system.populate_courses(current_user.id)
+            return redirect(url_for("courses"))
+        else:
+            error = True
+    return render_template("index.html", error = error)
 
-@app.route('/', methods=["GET", "POST"])
-def index():
-    error = ""
-    try:
-        if request.method == "POST":
-            global user
-            user = User(request.form['zID'], request.form['zPass'])
+@app.route("/courses", methods=["GET", "POST"])
+@login_required
+def courses():
+    courses = system.get_courses(current_user.id)
+    if request.method == "POST":
+        for c in courses:
+            if request.form.get(c.name):
+                c.selected = True
 
-            if user.authenticate() == True:
-                print('User Authenticated')
-                return redirect(url_for('courses', id=user.zID))
-            else:
-                    error = "Invalid. Try Again!"
+        return redirect(url_for("events"))
 
-            return render_template('index.html', error=error)
-    except Exception as e:
-        return render_template('index.html', error=ERROR_STATEMENT)
-    #else:
-    return render_template('index.html', error=error)
+    return render_template("courses.html", courses = courses)
 
-@app.route('/courses/<id>', methods=["GET", "POST"])
-def courses(id):
-    global user
-    global userSystem
-    userSystem = UserSystem(user)
-    user.courses = userSystem.populateCourses()
-    err = True
-    error = ""
-    try:
-        if request.method == "POST":
-            print('post request recieved')
-            res = request.form.get('all')
-            print(res)
-            if 'True' == res:
-                print('all selected')
-                err = False
-                for course in user.courses:
-                    course.do = True
-                    print(course.name)
-            else:
-                for course in user.courses:
+@app.route('/events', methods=["GET", "POST"])
+def events():
+    if request.method == "POST":
+        # write to necessary stuff
+        return redirect(url_for("duedates"))
 
-                    if 'True' == request.form.get(course.name):
-                        course.do = True
-                        print('selected'+course.name)
-                        err = False
-
-            if err == True:
-                return render_template('courses.html', id=user.zID, courses=user.courses, error=ERROR_STATEMENT)
-            else:
-                return redirect(url_for('events', id=user.zID))
-
-
-    except Exception as e:
-
-        return render_template('courses.html', id=user.zID, courses=user.courses, error=e)
-
-    return render_template('courses.html', id=user.zID, courses=user.courses, error=error)
-
-
-@app.route('/events/<id>', methods=["GET", "POST"]')
-def events(id):
-    return render_template('events.html', id=user.zID)
-
-
-@app.route('/processing/<id>', methods=["GET", "POST"])
-def processing(id):
-    return render_template('processing.html', id=user.zID)
+    return render_template("events.html")
 
 @app.route('/duedates')
 def duedates():
+    system.get_due_dates(current_user.id)
+    # print(current_user.id)
+    # system.log_out_user(current_user.id)
+    # logout_user()
+    # print(current_user.id)
     return render_template('duedates.html')
-
-
-
-
-
-
-
-
-
-
-
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
