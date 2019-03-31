@@ -1,6 +1,5 @@
 from UserSystem import UserSystem
 from Course import Course
-
 import requests
 from lxml import html
 import re
@@ -26,7 +25,7 @@ class RaisinSystem():
         self._user_system.add_courses(id, courses)
 
     def populate_courses(self, id):
-        doc = self._user_system.navigateTo(id, DASHBOARD_URL)
+        doc = self.navigateTo(id, DASHBOARD_URL)
         courses = []
         nav = doc.xpath('.//ul[@class="nav navbar-nav"]')[0]
         for item in nav:
