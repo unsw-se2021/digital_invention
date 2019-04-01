@@ -39,27 +39,28 @@ def courses():
 @app.route('/events', methods=["GET", "POST"])
 @login_required
 def events():
-    try:
-        if request.method == "POST":
-            # write to necessary stuff
-            system.get_due_dates(current_user.id)
-            return redirect(url_for("duedates"))
+    # try:
+    if request.method == "POST":
+        # write to necessary stuff
+        system.get_due_dates(current_user.id)
+        return redirect(url_for("duedates"))
 
-        return render_template("events.html")
-    except:
-        system.log_out_user(current_user.id)
-        return redirect(url_for("login"))
+    return render_template("events.html")
+    # except:
+    #     system.log_out_user(current_user.id)
+    #     return redirect(url_for("login"))
 
 @app.route('/duedates')
 @login_required
 def duedates():
-    try:
-        # system.get_due_dates(current_user.id)
-        # print(current_user.id)
-        # system.log_out_user(current_user.id)
-        # logout_user()
-        # print(current_user.id)
-        return render_template('duedates.html')
-    except:
-        system.log_out_user(current_user.id)
-        return redirect(url_for("login"))
+    # try:
+    courses = system.get_courses(current_user.id)
+    # system.get_due_dates(current_user.id)
+    # print(current_user.id)
+    # system.log_out_user(current_user.id)
+    # logout_user()
+    # print(current_user.id)
+    return render_template('duedates.html', courses = courses)
+    # except:
+    #     system.log_out_user(current_user.id)
+    #     return redirect(url_for("login"))

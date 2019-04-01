@@ -1,9 +1,11 @@
 from UserSystem import UserSystem
-from Course import Course
+from Course import Course, Assignment
 import requests
 from lxml import html
 import re
 import tabula
+import csv
+import os
 
 BASE_URL = "https://webcms3.cse.unsw.edu.au"
 DASHBOARD_URL = BASE_URL + "/dashboard"
@@ -41,6 +43,13 @@ class RaisinSystem():
     def getResult(self, id, url):
         return self._user_system.getResult(id, url)
 
+    def add_assignment(self, id, course, assignment):
+        self._user_system.add_assignment(id, course, assignment)
+
+    def get_assignments(self, id, course):
+        return self._user_system.get_assignments(id, course)
+
+    # rory's big parser
     def get_due_dates(self, id):
         for c in self.get_courses(id):
             if not c.selected:
@@ -68,17 +77,23 @@ class RaisinSystem():
                 # redirect to the PDF URL
                 result = self.getResult(id, curr_outline_url)
                 # download the PDF
-                with open(c.name + "_outline.pdf", "wb") as f:
+                with open("tempfiles/" + c.name + "_outline.pdf", "wb") as f:
                     f.write(result.content)
                 # use tabula to convert all tables into a CSV
-                tabula.convert_into(c.name + "_outline.pdf", c.name + "_outline.csv", output_format = "csv", pages = "all", multiple_tables = True, silent = True, java_options = "-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider")
-                with open(c.name + "_outline.csv") as of:
-                    merged = of.readlines()
+                tabula.convert_into("tempfiles/" + c.name + "_outline.pdf", "tempfiles/" + c.name + "_outline.csv", output_format = "csv", pages = "all", lattice = True, multiple_tables = True, silent = True, java_options = "-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider")
+                merged = []
+                with open("tempfiles/" + c.name + "_outline.csv") as of:
+                    of_reader = csv.reader(of, delimiter = ",")
+                    for row in of_reader:
+                        merged.append(" ".join(row))
+                os.remove("tempfiles/" + c.name + "_outline.pdf")
+                os.remove("tempfiles/" + c.name + "_outline.csv")
 
             if (not pdf_frame):
-                bullet_point = doc.xpath('.//li')
+                # bullet_point = doc.xpath('.//li')
                 table_row = doc.xpath('.//tr')
-                merged = bullet_point + table_row
+                # merged = bullet_point + table_row
+                merged = table_row
 
             # parse course outline html for assignment dates
             assignment = {}
@@ -98,9 +113,22 @@ class RaisinSystem():
                 if (assignment_search):
                     # search for a reference to a week in the same line
                     if (week_search_1):
+                        self.add_assignment(id, c.name, Assignment(assignment_search.group(2), week_search_1.group(1)))
                         assignment[assignment_search.group(2)] = week_search_1.group(1)
                     elif (week_search_2):
+                        self.add_assignment(id, c.name, Assignment(assignment_search.group(2), week_search_2.group(1)))
                         assignment[assignment_search.group(2)] = week_search_2.group(1)
+
+                # search for references to due dates
+                due_search = re.search("(?i)((del|deliverable) [0-9]+)", line_formatted)
+                if (due_search):
+                    # search for a reference to a week in the same line
+                    if (week_search_1):
+                        self.add_assignment(id, c.name, Assignment(due_search.group(1), week_search_1.group(1)))
+                        assignment[due_search.group(1)] = week_search_1.group(1)
+                    elif (week_search_2):
+                        self.add_assignment(id, c.name, Assignment(due_search.group(1), week_search_2.group(1)))
+                        assignment[due_search.group(1)] = week_search_2.group(1)
 
                 # search for references to exams
                 exam_search = re.search("(?i)([\w-]+ exam\\b)", line_formatted)

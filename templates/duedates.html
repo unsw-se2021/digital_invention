@@ -5,20 +5,15 @@
 </div>
 <div class="row">
     <div class="col l4 s8 offset-l4 offset-s2">
+        {% for c in courses %}
         <div class="row">
-            <h6>COMPXXXX:</h6>
-            <li>Week 1: X</li>
-            <li>Week 2: X</li>
-            <li>Week 3: X</li>
-            <li>Week 4: X</li>
-            <li>Week 5: X</li>
-            <li>Week 6: X</li>
-            <li>Week 7: X</li>
-            <li>Week 8: X</li>
-            <li>Week 9: X</li>
-            <li>Week 10: X</li>
-            <li>Exam period: X</li>
+            <h6>{{c.name}}:</h6>
+            <h6>Assignments:</h6>
+            {% for a in c.assignments %}
+            <li>{{a.name}} - Week {{a.week}}</li>
+            {% endfor %}
         </div>
+        {% endfor %}
     </div>
 </div>
 <div class="row">

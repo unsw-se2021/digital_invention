@@ -42,7 +42,7 @@ class UserSystem():
 
     def log_out_user(self, id):
         self.navigateTo(id, LOGOUT_URL)
-        logout_user(id)
+        logout_user()
 
     def navigateTo(self, id, url):
         result = self.getResult(id, url)
@@ -59,3 +59,14 @@ class UserSystem():
 
     def get_courses(self, id):
         return self._users[id].courses
+
+    def add_assignment(self, id, course, assignment):
+        for c in self._users[id].courses:
+            if c.name == course:
+                c.assignments.append(assignment)
+                break
+
+    def get_assignments(self, id, course):
+        for c in self._users[id].courses:
+            if c.name == course:
+                return c.assignments
