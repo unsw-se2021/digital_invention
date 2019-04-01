@@ -28,12 +28,16 @@ def courses():
             for c in courses:
                 if request.form.get(c.name):
                     c.selected = True
+                else:
+                    c.selected = False
+
+            # fix course choice error!!
 
             return redirect(url_for("events"))
 
         return render_template("courses.html", courses = courses)
     except:
-        return redirect(url_for("login"))
+        return redirect(url_for("logout"))
 
 @app.route('/events', methods=["GET", "POST"])
 @login_required
@@ -46,7 +50,7 @@ def events():
 
         return render_template("events.html")
     except:
-        return redirect(url_for("login"))
+        return redirect(url_for("logout"))
 
 @app.route('/duedates', methods=["GET", "POST"])
 @login_required
@@ -55,7 +59,7 @@ def duedates():
         courses = system.get_courses(current_user.id)
         return render_template('duedates.html', courses = courses)
     except:
-        return redirect(url_for("login"))
+        return redirect(url_for("logout"))
 
 @app.route('/logout')
 @login_required

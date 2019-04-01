@@ -52,8 +52,8 @@ class RaisinSystem():
     # rory's big parser
     def scrape_due_dates(self, id):
         for c in self.get_courses(id):
-            if not c.selected:
-                continue
+            # if not c.selected:
+            #     continue
             print("Due dates for " + c.name + ":")
             # get course outline
             curr_course_url = c.url
