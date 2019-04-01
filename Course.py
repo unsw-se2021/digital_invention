@@ -5,16 +5,10 @@ class Course():
         self.name = name
         self.url = url
         self.selected = selected
-        self.assignments = []
+        self.due_dates = []
         self.exams = []
 
-class Assignment():
-    def __init__(self, name, week):
-        self.name = name
-        self.week = week
-        self.weighting = 0
-
-class ProjectMilestone():
+class DueDate():
     def __init__(self, name, week):
         self.name = name
         self.week = week

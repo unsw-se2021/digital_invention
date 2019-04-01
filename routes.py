@@ -42,7 +42,7 @@ def events():
     # try:
     if request.method == "POST":
         # write to necessary stuff
-        system.get_due_dates(current_user.id)
+        system.scrape_due_dates(current_user.id)
         return redirect(url_for("duedates"))
 
     return render_template("events.html")

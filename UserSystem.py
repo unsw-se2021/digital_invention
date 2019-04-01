@@ -60,17 +60,17 @@ class UserSystem():
     def get_courses(self, id):
         return self._users[id].courses
 
-    def add_assignment(self, id, course, assignment):
+    def add_due_date(self, id, course, due_date):
         for c in self._users[id].courses:
             if c.name == course:
-                for a in range (len(c.assignments)):
-                    if c.assignments[a].name == assignment.name:
-                        c.assignments[a] = assignment
+                for a in range (len(c.due_dates)):
+                    if c.due_dates[a].name == due_date.name:
+                        c.due_dates[a] = due_date
                         return
-                c.assignments.append(assignment)
+                c.due_dates.append(due_date)
                 break
 
-    def get_assignments(self, id, course):
+    def get_due_dates(self, id, course):
         for c in self._users[id].courses:
             if c.name == course:
-                return c.assignments
+                return c.due_dates

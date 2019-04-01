@@ -1,5 +1,5 @@
 from UserSystem import UserSystem
-from Course import Course, Assignment
+from Course import Course, DueDate
 import requests
 from lxml import html
 import re
@@ -43,14 +43,14 @@ class RaisinSystem():
     def getResult(self, id, url):
         return self._user_system.getResult(id, url)
 
-    def add_assignment(self, id, course, assignment):
-        self._user_system.add_assignment(id, course, assignment)
+    def add_due_date(self, id, course, due_date):
+        self._user_system.add_due_date(id, course, due_date)
 
-    def get_assignments(self, id, course):
-        return self._user_system.get_assignments(id, course)
+    def get_due_dates(self, id, course):
+        return self._user_system.get_due_dates(id, course)
 
     # rory's big parser
-    def get_due_dates(self, id):
+    def scrape_due_dates(self, id):
         for c in self.get_courses(id):
             if not c.selected:
                 continue
@@ -90,14 +90,13 @@ class RaisinSystem():
                 os.remove("tempfiles/" + c.name + "_outline.csv")
 
             if (not pdf_frame):
-                bullet_point = doc.xpath('.//li')
+                # bullet_point = doc.xpath('.//li')
                 table_row = doc.xpath('.//tr')
-                merged = bullet_point + table_row
-                # merged = table_row
+                # merged = bullet_point + table_row
+                merged = table_row
 
             # parse course outline html for assignment dates
-            assignment = {}
-            exam = {}
+            # assignment = {}
 
             for line in merged:
                 if (not pdf_frame):
@@ -105,52 +104,32 @@ class RaisinSystem():
                 else:
                     line_formatted = line
 
+                searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)((del|deliverable) [0-9]+))", "((?i)([\w-]+ exam\\b))"]
+
                 week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
                 week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
                 
-                # search for references to assignments
-                assignment_search = re.search("(?i)(?!.*(released|out))(assignment [0-9]+)", line_formatted)
-                if (assignment_search):
-                    # search for a reference to a week in the same line
-                    if (week_search_1):
-                        self.add_assignment(id, c.name, Assignment(assignment_search.group(2), week_search_1.group(1)))
-                        assignment[assignment_search.group(2)] = week_search_1.group(1)
-                    elif (week_search_2):
-                        self.add_assignment(id, c.name, Assignment(assignment_search.group(2), week_search_2.group(1)))
-                        assignment[assignment_search.group(2)] = week_search_2.group(1)
+                for s in searches:
+                    # search for references to assignments
+                    date_search = re.findall(s, line_formatted)
+                    for d in date_search:
+                        # search for a reference to a week in the same line
+                        if (week_search_1):
+                            self.add_due_date(id, c.name, DueDate(d[0], "Week " + week_search_1.group(1)))
+                            # assignment[d[0]] = week_search_1.group(1)
+                        elif (week_search_2):
+                            self.add_due_date(id, c.name, DueDate(d[0], "Week " + week_search_2.group(1)))
+                            # assignment[d[0]] = week_search_2.group(1)
 
-                # search for references to due dates
-                due_search = re.search("(?i)((del|deliverable) [0-9]+)", line_formatted)
-                if (due_search):
-                    # search for a reference to a week in the same line
-                    if (week_search_1):
-                        self.add_assignment(id, c.name, Assignment(due_search.group(1), week_search_1.group(1)))
-                        assignment[due_search.group(1)] = week_search_1.group(1)
-                    elif (week_search_2):
-                        self.add_assignment(id, c.name, Assignment(due_search.group(1), week_search_2.group(1)))
-                        assignment[due_search.group(1)] = week_search_2.group(1)
+            # search everywhere to see if there's a final exam
+            final_exam_search_1 = re.search("(?i)Exam Period", doc.text_content())
+            final_exam_search_2 = re.search("(?i)Final Exam\\b", doc.text_content())
+            if (final_exam_search_1 or final_exam_search_2):
+                self.add_due_date(id, c.name, DueDate("Final Exam", "Exam Period"))
 
-                # search for references to exams
-                exam_search = re.search("(?i)([\w-]+ exam\\b)", line_formatted)
-                if (exam_search):
-                    if (week_search_1):
-                        exam[exam_search.group(1)] = week_search_1.group(1)
-                    elif (week_search_2):
-                        exam[exam_search.group(1)] = week_search_2.group(1)
-
-            print("Assignment dates:")
-            if (not assignment):
-                print("No assignments found")
-            else:
-                for a in assignment:
-                    print(a + " - Week " + assignment[a])
-
-            print()
-
-            print("Exam dates:")
-            if (not exam):
-                print("No exams found")
-            else:
-                for e in exam:
-                    print(e + " - Week " + exam[e])
-            print()
+            # print("Due dates:")
+            # if (not assignment):
+            #     print("No dates found")
+            # else:
+            #     for a in assignment:
+            #         print(a + " - Week " + assignment[a])
