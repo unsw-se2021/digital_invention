@@ -54,7 +54,7 @@ class RaisinSystem():
         for c in self.get_courses(id):
             # if not c.selected:
             #     continue
-            print("Due dates for " + c.name + ":")
+            # print("Due dates for " + c.name + ":")
             # get course outline
             curr_course_url = c.url
             doc = self.navigateTo(id, curr_course_url)
@@ -82,10 +82,12 @@ class RaisinSystem():
                 # use tabula to convert all tables into a CSV
                 tabula.convert_into("tempfiles/" + id + "_" + c.name + "_outline.pdf", "tempfiles/" + id + "_" + c.name + "_outline.csv", output_format = "csv", pages = "all", lattice = True, multiple_tables = True, silent = True, java_options = "-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider")
                 merged = []
+                whole_doc = ""
                 with open("tempfiles/" + id + "_" + c.name + "_outline.csv") as of:
                     of_reader = csv.reader(of, delimiter = ",")
                     for row in of_reader:
                         merged.append(" ".join(row))
+                        whole_doc += " " + " ".join(row)
                 os.remove("tempfiles/" + id + "_" + c.name + "_outline.pdf")
                 os.remove("tempfiles/" + id + "_" + c.name + "_outline.csv")
 
@@ -94,17 +96,26 @@ class RaisinSystem():
                 table_row = doc.xpath('.//tr')
                 # merged = bullet_point + table_row
                 merged = table_row
+                whole_doc = doc.text_content()
 
             # parse course outline html for assignment dates
             # assignment = {}
+            
+            # searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)((del|deliverable) [0-9]+))", "((?i)([\w-]+ exam\\b))"]
+            searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)([\w-]+ exam\\b))"]
+
+            # search everywhere to see if there's X due
+            x_due_search = re.findall("(?i)(([\w-]+) [0-9]+ due\\b)", whole_doc)
+            for x in x_due_search:
+                if "((?i)(" + x[1] + " [0-9]+))" not in searches:
+                    print("adding " + x[1])
+                    searches.append("((?i)(" + x[1] + " [0-9]+))")
 
             for line in merged:
                 if (not pdf_frame):
                     line_formatted = line.text_content().strip()
                 else:
                     line_formatted = line
-
-                searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)((del|deliverable) [0-9]+))", "((?i)([\w-]+ exam\\b))"]
 
                 week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
                 week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
@@ -122,8 +133,8 @@ class RaisinSystem():
                             # assignment[d[0]] = week_search_2.group(1)
 
             # search everywhere to see if there's a final exam
-            final_exam_search_1 = re.search("(?i)Exam Period", doc.text_content())
-            final_exam_search_2 = re.search("(?i)Final Exam\\b", doc.text_content())
+            final_exam_search_1 = re.search("(?i)Exam Period", whole_doc)
+            final_exam_search_2 = re.search("(?i)Final Exam\\b", whole_doc)
             if (final_exam_search_1 or final_exam_search_2):
                 self.add_due_date(id, c.name, DueDate("Final Exam", "Exam Period"))
 
