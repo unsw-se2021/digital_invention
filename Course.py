@@ -6,7 +6,6 @@ class Course():
         self.url = url
         self.selected = selected
         self.due_dates = []
-        self.exams = []
 
 class DueDate():
     def __init__(self, name, week):
