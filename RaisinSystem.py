@@ -77,17 +77,17 @@ class RaisinSystem():
                 # redirect to the PDF URL
                 result = self.getResult(id, curr_outline_url)
                 # download the PDF
-                with open("tempfiles/" + c.name + "_outline.pdf", "wb") as f:
+                with open("tempfiles/" + id + "_" + c.name + "_outline.pdf", "wb") as f:
                     f.write(result.content)
                 # use tabula to convert all tables into a CSV
-                tabula.convert_into("tempfiles/" + c.name + "_outline.pdf", "tempfiles/" + c.name + "_outline.csv", output_format = "csv", pages = "all", lattice = True, multiple_tables = True, silent = True, java_options = "-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider")
+                tabula.convert_into("tempfiles/" + id + "_" + c.name + "_outline.pdf", "tempfiles/" + id + "_" + c.name + "_outline.csv", output_format = "csv", pages = "all", lattice = True, multiple_tables = True, silent = True, java_options = "-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider")
                 merged = []
-                with open("tempfiles/" + c.name + "_outline.csv") as of:
+                with open("tempfiles/" + id + "_" + c.name + "_outline.csv") as of:
                     of_reader = csv.reader(of, delimiter = ",")
                     for row in of_reader:
                         merged.append(" ".join(row))
-                os.remove("tempfiles/" + c.name + "_outline.pdf")
-                os.remove("tempfiles/" + c.name + "_outline.csv")
+                os.remove("tempfiles/" + id + "_" + c.name + "_outline.pdf")
+                os.remove("tempfiles/" + id + "_" + c.name + "_outline.csv")
 
             if (not pdf_frame):
                 # bullet_point = doc.xpath('.//li')

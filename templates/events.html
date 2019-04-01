@@ -1,5 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
+
+<nav class="nav-extended teal lighten-2">
+    <div class="nav-wrapper">
+        <span class="center brand-logo bebastitle">Raisin</span>
+        <ul id="nav-mobile" class="right">
+            <li><a href="{{url_for('logout')}}">Log out</a></li>
+        </ul>
+    </div>
+    <div class="nav-content center">
+        <a href="{{url_for('courses')}}" class="breadcrumb">Courses</a>
+        <a href="#!" class="breadcrumb">Events</a>
+    </div>
+</nav>
+
+<div class="row"></div>
 <container id="content" class="content">
     <div class="row">
         <h5 class="center col l12 s8 offset-s2">Raisin will include dates for the following events:</h5>
@@ -9,7 +24,7 @@
             <div class="row">
                 <p>
                     <label>
-                        <input type="checkbox" class="filled-in" name="assignments" checked="checked"/>
+                        <input type="checkbox" class="filled-in" name="assignments" checked disabled/>
                         <span>Assignments</span>
                     </label>
                 </p>
@@ -17,7 +32,7 @@
             <div class="row">
                 <p>
                     <label>
-                        <input type="checkbox" class="filled-in" name="exams" checked="checked"/>
+                        <input type="checkbox" class="filled-in" name="exams" checked disabled/>
                         <span>Exams</span>
                     </label>
                 </p>
@@ -25,7 +40,7 @@
             <div class="row">
                 <p>
                     <label>
-                        <input type="checkbox" class="filled-in" name="milestones" checked="checked"/>
+                        <input type="checkbox" class="filled-in" name="milestones" checked disabled/>
                         <span>Project milestones</span>
                     </label>
                 </p>
@@ -33,7 +48,7 @@
             <div class="row">
                 <p>
                     <label>
-                        <input type="checkbox" class="filled-in" name="labs" checked="checked"/>
+                        <input type="checkbox" class="filled-in" name="labs" checked disabled/>
                         <span>Labs</span>
                     </label>
                 </p>

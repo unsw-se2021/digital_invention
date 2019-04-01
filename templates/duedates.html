@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
+
+<nav class="nav-extended teal lighten-2">
+    <div class="nav-wrapper">
+        <span class="center brand-logo bebastitle">Raisin</span>
+        <ul id="nav-mobile" class="right">
+            <li><a href="{{url_for('logout')}}">Log out</a></li>
+        </ul>
+    </div>
+    <div class="nav-content center">
+        <a href="{{url_for('courses')}}" class="breadcrumb">Courses</a>
+        <a href="{{url_for('events')}}" class="breadcrumb">Events</a>
+        <a href="#!" class="breadcrumb">Due Dates</a>
+    </div>
+</nav>
+
+<div class="row"></div>
 <div class="row">
     <h5 class="center col l12 s8 offset-s2">Due dates:</h5>
 </div>
