@@ -27,7 +27,7 @@ class UserSystem(object):
 
 
 if __name__ == "__main__":
-    test_user = User('z5170340', 'Aga.khan1')
+    test_user = User('z5170340', 'fake')
     #print(test_user.authenticate(test_user.id, test_user.pass))
     test_user_system = UserSystem()
     if test_user.authenticate() == True:

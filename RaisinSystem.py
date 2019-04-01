@@ -102,26 +102,26 @@ def generateCourseLink(courseCode):
 # Get Links for Search term
 def searchLinks(searchTerm, searchLink):
     links = []
-    try:
-        refUrl = followRefresh(searchLink)
-        #print(refUrl)
-        #refUrl = followRefresh(BASE_URL + '/' + 'SENG' + courseCode + '/' + year)
-        html = Urlopen(refUrl)
-        bs = soup(html.read(), 'lxml')
-        for link in bs.find_all('a'):
-            if searchTerm in str(link).lower():
-                #print(refUrl, link['href'])
-                found = genLink(refUrl, link['href'])
-                #print(found)
-                links.append(found)
-                '''
-                newLinks = searchLinks(searchTerm, found)
-                for l in newLinks:
-                    if l not in links:
-                        links.append(l)
-                '''
-    except Exception as e:
-        return None
+    refUrl = followRefresh(searchLink)
+    #print(refUrl)
+    #refUrl = followRefresh(BASE_URL + '/' + 'SENG' + courseCode + '/' + year)
+    html = Urlopen(refUrl)
+    bs = soup(html.read(), 'lxml')
+    for link in bs.find_all('a'):
+        if searchTerm in str(link).lower():
+            #print(refUrl, link['href'])
+            found = genLink(refUrl, link['href'])
+            if BASE_URL_2 in refUrl and Urlopen(found) == None:
+                found = genLink(BASE_URL, link['href'])
+            print(found)
+            for l in links:
+                if found == l:
+                    pass
+                else:
+                    links.append(found)
+            newLinks = searchLinks(searchTerm, found)
+            print(newLinks)
+
     return links
 
 def navigateTo(url, session):
@@ -139,9 +139,6 @@ if __name__ == "__main__":
     courseCode = input("enter course code e.g. 1511: ")
     searchTerm = input("enter search term e.g. outline: ")
     courseLink = generateCourseLink(courseCode)
+
     #courseLink = 'https://cgi.cse.unsw.edu.au/~cs1511/COMP1511/19T1/resources/23728/'
     print(searchLinks(searchTerm, courseLink))
-    #html = Urlopen(courseLink)
-    #print(html.read())
-
-    #print(links)
