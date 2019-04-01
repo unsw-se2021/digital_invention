@@ -63,6 +63,10 @@ class UserSystem():
     def add_assignment(self, id, course, assignment):
         for c in self._users[id].courses:
             if c.name == course:
+                for a in range (len(c.assignments)):
+                    if c.assignments[a].name == assignment.name:
+                        c.assignments[a] = assignment
+                        return
                 c.assignments.append(assignment)
                 break
 

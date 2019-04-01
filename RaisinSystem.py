@@ -90,10 +90,10 @@ class RaisinSystem():
                 os.remove("tempfiles/" + c.name + "_outline.csv")
 
             if (not pdf_frame):
-                # bullet_point = doc.xpath('.//li')
+                bullet_point = doc.xpath('.//li')
                 table_row = doc.xpath('.//tr')
-                # merged = bullet_point + table_row
-                merged = table_row
+                merged = bullet_point + table_row
+                # merged = table_row
 
             # parse course outline html for assignment dates
             assignment = {}
