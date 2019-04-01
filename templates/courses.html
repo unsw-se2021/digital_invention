@@ -11,11 +11,9 @@
         <div class="row">
             <p>
                 <label>
-
                     <input type="checkbox" class="filled-in" name="{{ course.name }}" value="True"/>
                     <span>{{ course.name }}</span>
                     <br>
-
                 </label>
             </p>
         </div>
@@ -28,18 +26,17 @@
                     <span>Select all</span>
                 </label>
             </p>
+        </div><div class="row">
+            <div class="input-field">
+                <i class="material-icons prefix">add_circle</i>
+                <input id="addcourse" type="text" name="addCourse" value="{{request.form.addCourse}}">
+                <label for="addcourse">Add Course e.g. COMP1511</label>
+            </div>
         </div>
         <div class="row center">
-            <i class="material-icons right">send</i>
+            <!-- <i class="material-icons right">send</i> CANNOT GET THE ARROW INSIDE LOGIN BUTTON -->
             <input class="waves-effect waves-light btn" value="Next" type="submit">
         </div>
     </form>
 </div>
-
-<div class="row">
-    <div class="center col l12 s8 offset-s2">
-        <h5>{{error}}</h5>
-    </div>
-</div>
-
 {% endblock %}

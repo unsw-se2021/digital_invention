@@ -15,6 +15,8 @@ def get_dates(term_num):
     exam_week_str = doc.xpath(".//tr[contains(text(), 'Exams T" + str(term_num) + "')]")[0].text_content()
     exam_week_date = re.search("(?i)Exams T" + str(term_num) + " ([0-9]+ (jan|feb|mar|apr|may|june|july|aug|sep|oct|nov|dec))", start_week_str).group(1)
 
+    print(start_week_str)
+
     # todo: create a dictionary of all weeks and their start dates using datetime
     # e.g.
     # week = {}

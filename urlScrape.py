@@ -5,12 +5,13 @@ import lxml
 from urllib.error import HTTPError, URLError
 
 
-subjectCode1 = 'COMP'
-subjectCode2 = 'cs'
-courseCode  = '3121'
-year        = '19T1'
-BASE_URL    = 'https://webcms3.cse.unsw.edu.au'
-BASE_URL_2  = 'https://cgi.cse.unsw.edu.au'
+subjectCode1    = 'COMP'
+subjectCode2    = 'cs'
+courseCode      = '3121'
+year            = '19T1'
+BASE_URL        = 'https://webcms3.cse.unsw.edu.au'
+BASE_URL_2      = 'https://cgi.cse.unsw.edu.au'
+CALENDAR_URL    = "https://student.unsw.edu.au/calendar"
 
 # UrlOpen with error handling
 def Urlopen(url):
@@ -30,13 +31,20 @@ def Urlopen(url):
 def followRefresh(url):
     try:
         response = Urlopen(url)
-        html = soup(response.read(), 'html.parser')
-        print(html.geturl())
-        element = html.find('meta', attrs={'http-equiv': 'refresh'})
-        refreshContent = element['content']
-        refUrl = refreshContent.partition('=')[2]
+        html = soup(response.read(), 'lxml')
+        #print(html.geturl())
+        #print(html.meta)
+        element = html.find_all('meta')
+        for e in element:
+            #if 'URL'|'url' in (e['content']):
+            refUrl = (e['content'].partition('=')[2])
+            if 'http' in refUrl:
+                response.close()
+                return refUrl
+        #refreshContent = element['content']
+        #refUrl = refreshContent.partition('=')[2]
         response.close()
-        return refUrl
+        return url
     except:
         return url
 
@@ -78,18 +86,27 @@ def genLink(base, forward):
                 base = base + '/' + (f)
     return base
 
-courseCode = input("enter course code e.g. 1511: ")
-#html = Urlopen('http://cgi.cse.unsw.edu.au/~' + subjectCode + courseCode + '/' + )
-searchTerm = input("enter search term e.g. outline: ")
-try:
-    refUrl = followRefresh(BASE_URL + '/' + subjectCode1 + courseCode + '/' + year)
-    html = Urlopen(refUrl)
-    bs = soup(html.read(), 'lxml')
-except:
-    refUrl = followRefresh(BASE_URL_2 + '/' + '~' + subjectCode2 + courseCode + '/')
-    html = Urlopen(refUrl)
-    bs = soup(html.read(), 'lxml')
+# Generate Current Term
 
-for ass in bs.find_all('a'):
-    if searchTerm in str(ass).lower():
-        print(genLink(refUrl, ass['href']))
+# Generate Course URL
+def generateCourseLink(courseCode):
+    return BASE_URL_2 + '/' + '~' + subjectCode2 + courseCode + '/'
+
+# Get Links for Search term
+def searchLinks(searchTerm, courseCode):
+    refUrl = followRefresh(generateCourseLink(courseCode))
+    #refUrl = followRefresh(BASE_URL + '/' + 'SENG' + courseCode + '/' + year)
+    html = Urlopen(refUrl)
+    bs = soup(html.read(), 'lxml')
+    links = []
+    for link in bs.find_all('a'):
+        if searchTerm in str(link).lower():
+            links.append(genLink(refUrl, link['href']))
+    return links
+
+if __name__ == "__main__":
+    courseCode = input("enter course code e.g. 1511: ")
+    #html = Urlopen('http://cgi.cse.unsw.edu.au/~' + subjectCode + courseCode + '/' + )
+    searchTerm = input("enter search term e.g. outline: ")
+    print(searchLinks(searchTerm, courseCode))
+    #print(links)

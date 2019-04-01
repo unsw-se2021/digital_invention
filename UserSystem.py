@@ -1,58 +1,38 @@
 # User System Class
 from User import *
-from Course import Course
-
-BASE_URL        = "https://webcms3.cse.unsw.edu.au"
-LOGIN_URL       = BASE_URL + "/login"
-DASHBOARD_URL   = BASE_URL + "/dashboard"
-LOGOUT_URL      = BASE_URL + "/logout"
+from RaisinSystem import *
 
 class UserSystem(object):
-    def __init__(self, user):
-        self._user = user
+    def __init__(self):
+        self._users = []
 
     @property
-    def user(self):
-        return self._user
-    @user.setter
-    def user(self, user):
-        self._user = user
+    def users(self):
+        return self._users
+    @users.setter
+    def users(self, user):
+        self._users.append(user)
 
-
-
-
-    def navigateTo(self, url):
-        if url[:1] == "/":
-            url = BASE_URL + url
-
-        result = self.user._session.get(url, headers = dict(referer = url))
-        doc = html.fromstring(result.content)
-
-        return doc
-
-    # Populate Courses
-    def populateCourses(self):
-        doc = self.navigateTo(DASHBOARD_URL)
-
-        courses = []
-        #print("Your courses:")
-        nav = doc.xpath('.//ul[@class="nav navbar-nav"]')[0]
-        for item in nav:
-            #courses.append({"name": item.text_content(), "url": item[0].get("href"), "do": False})
-            #course = Course(item.text_content(), item[0].get("href"), False)
-            courses.append(Course(item.text_content(), item[0].get("href"), False))
-            #print(item.text_content())
-        return courses
+    # Get User
+    def getUser(self, id):
+        for u in self._users:
+            if id == u.zID:
+                return u
+        return None
 
     # Log Out
-    def logOut(self):
-        navigateTo(LOGOUT_URL)
+    def logout(self, id):
+        navigateTo(LOGOUT_URL, self.getUser(id).session)
         return "Logged Out!"
 
 
 if __name__ == "__main__":
-    test_user = User('z5170340', 'Fake')
-    print(test_user.authenticate())
-    test_user_system = UserSystem(test_user)
+    test_user = User('z5170340', 'Aga.khan1')
+    #print(test_user.authenticate(test_user.id, test_user.pass))
+    test_user_system = UserSystem()
+    if test_user.authenticate() == True:
+        test_user_system.users = test_user
+        print((test_user_system.getUser(test_user.zID)).zID)
+        test_user_system.logout(test_user.zID)
     #test_user_system = UserSystem(test_user)
     #print(test_user_system.authenticate())

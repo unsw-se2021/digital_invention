@@ -1,6 +1,5 @@
 # User class
-import requests
-from lxml import html
+from RaisinSystem import *
 
 BASE_URL        = "https://webcms3.cse.unsw.edu.au"
 LOGIN_URL       = BASE_URL + "/login"
@@ -31,8 +30,8 @@ class User():
     def courses(self):
         return self._courses
     @courses.setter
-    def courses(self, courses):
-        self._courses = courses
+    def courses(self, course):
+        self._courses.append(course)
 
     @property
     def session(self):
@@ -40,8 +39,6 @@ class User():
     @session.setter
     def session(self, session):
         self._session = session
-
-
 
     # Authenticate User and save session
     def authenticate(self):
@@ -63,6 +60,7 @@ class User():
 
 def white_test():
     test_user = User('z5170340', 'FakePassword')
+    test_user.courses = 'a'
     print(test_user.authenticate())
     #print(test_user.zID, test_user.zPass)
 
