@@ -13,8 +13,8 @@ class UserSystem():
     def __init__(self):
         self._users = {}
 
-    def add_user(self, id, password):
-        new_user = User(id, password)
+    def add_user(self, id):
+        new_user = User(id)
         self._users[id] = new_user
 
     def authenticate_user(self, id, password):
@@ -27,7 +27,7 @@ class UserSystem():
         for r in result.history:
             if LOGIN_URL == (r.url):
                 if id not in self._users:
-                    self.add_user(id, password)
+                    self.add_user(id)
                 user = self._users[id]
                 login_user(user)
                 user.session = session

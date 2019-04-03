@@ -2,9 +2,8 @@
 from flask_login import UserMixin
 
 class User(UserMixin):
-    def __init__(self, id, password):
+    def __init__(self, id):
         self._id = id
-        self._password = password
         self._courses = []
         self._session = None
 
@@ -14,13 +13,6 @@ class User(UserMixin):
     @id.setter
     def id(self, id):
         self._id = id
-
-    @property
-    def password(self):
-        return self._password
-    @password.setter
-    def password(self, password):
-        self._password = password
 
     @property
     def courses(self):
