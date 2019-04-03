@@ -1,33 +1,11 @@
+/* #2196f3 */
+
 .bebastitle {
     font-family: Bebas;
 }
 
-/* .input-field .prefix.active {
-    color: #4caf50;
-} */
-
-div.footer {
-    text-align: center;
-    position: fixed;
-    width: 100%;
-    bottom: 0px;
-    padding-bottom: 22px;
-    padding-top: 22px;
-    opacity: 0.2;
-	transition:.5s;
-}
-
 button.full_width {
     width: 100%;
-}
-
-div.bottom_space {
-    padding-bottom: 44px;
-}
-
-div.footer:hover {
-	opacity: 1;
-	transition:.5s;
 }
 
 div.nav-content {
@@ -36,6 +14,30 @@ div.nav-content {
 
 container.loader {
     display: none;
+}
+
+.checkbox-blue[type="checkbox"].filled-in:checked + span:not(.lever):after 
+{
+    border: 2px solid #2196f3;  
+    background-color: #2196f3;
+}
+
+.input-field input[type=text]:focus + label {
+    color: #2196f3;
+}
+
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid #2196f3 !important;
+    box-shadow: 0 1px 0 0 #2196f3 !important;
+}
+
+.input-field input[type=password]:focus {
+    border-bottom: 1px solid #2196f3 !important;
+    box-shadow: 0 1px 0 0 #2196f3 !important;
+}
+
+.input-field .prefix.active {
+    color: #2196f3;
 }
 
 @font-face {
