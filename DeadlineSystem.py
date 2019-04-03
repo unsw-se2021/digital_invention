@@ -4,6 +4,7 @@ from __future__ import print_function
 from apiclient import discovery
 from httplib2 import Http
 from oauth2client import file, client, tools
+import os
 
 from datetime import datetime, timedelta
 from csv_ical import Convert
@@ -11,39 +12,34 @@ import csv
 
 class DeadlineSystem(object):
     def __init__(self):
-        self.obj = []
+        self.deadlines = []
 
     def googleCalender(self):
-        SCOPES = 'https://www.googleapis.com/auth/calendar/'
+        SCOPES = 'https://www.googleapis.com/auth/calendar'
         store = file.Storage('storage.json')
         creds = store.get()
         if not creds or creds.invalid:
             flow = client.flow_from_clientsecrets('client_secrets.json', SCOPES)
             creds = tools.run_flow(flow, store)
         GCAL = discovery.build('calendar', 'v3', http=creds.authorize(Http()))
+        for deadline in deadlines:
+            e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=getEventObject(deadline)).execute()
+        os.remove('storage.json')
 
-        GMT_OFF = '+11:00'      # PDT/MST/GMT-7
+    def getEventObject(self, deadline):
+        GMT_OFF = '+11:00'
         EVENT = {
-            'summary': 'Google I/O 2015',
-            'location': '800 Howard St., San Francisco, CA 94103',
-            'description': 'A chance to hear more about Google\'s developer products.',
-            'start': {
-            'dateTime': '2019-03-25T09:00:00-07:00',
-            'timeZone': 'Australia/Sydney',
-            },
-            'end': {
-            'dateTime': '2019-03-15T17:00:00-07:00',
-            'timeZone': 'Australia/Sydney',
-            }
+            'summary': deadline.description,
+            'location': deadline.location,
+            'description': deadline.worth,
+            'start': { 'dateTime': datetime.datetime.now().isoformat()},
+            'end': { 'dateTime': deadline.deadline}
         }
-        e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=EVENT).execute()
-    def getEventObject():
-        EVENT
-        return None
+        return EVENT
 
     # Convert to csv
-    def calCsv(self, string, split):
-        with open('calender.csv', 'w') as csvFile:
+    def calCsv(self, zid, string, split):
+        with open(zid+'.csv', 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
             i = 0
             line = ''
@@ -71,10 +67,10 @@ class DeadlineSystem(object):
 
     # Convert to iCal
 
-    def calIcal(self):
+    def calIcal(self, zid):
         convert = Convert()
-        csv_file_location = 'calender.csv'
-        ical_file_location = 'calender.ics'
+        csv_file_location = zid+'.csv'
+        ical_file_location = zid+'.ics'
         csv_configs = {
             'HEADER_COLUMNS_TO_SKIP': 1,
             'CSV_NAME': 0,
@@ -102,14 +98,14 @@ class DeadlineSystem(object):
         convert.make_ical(csv_configs)
         convert.save_ical(ical_file_location)
 
-    def createCalender(self, string, outFile, split):
+    def createCalender(self, zid, string, outFile, split):
 
-        self.calCsv(string, split)
+        self.calCsv(zid, string, split)
         if outFile == 'ical':
-            self.calIcal()
+            self.calIcal(zid)
 
 if __name__ == '__main__':
     test_string = 'Final exam1,05/03/13,10:00,12:00,Worth 20%,UNSW,Final exam2,05/03/13,9:00,12:00,Worth 20%,UNSW,Final exam3,05/03/13,10:00,12:00,Worth 20%,UNSW,'
     deadlineSystem = DeadlineSystem()
-    deadlineSystem.createCalender(test_string, 'ical', 6)
+    deadlineSystem.createCalender('z5170340', test_string, 'ical', 6)
     deadlineSystem.googleCalender()
