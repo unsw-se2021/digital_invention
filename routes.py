@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, send_file
 from User import User
 from UserSystem import UserSystem
 from CourseSystem import CourseSystem
@@ -114,9 +114,26 @@ def processing(id):
     user = userSystem.getUser(id)
     return render_template('processing.html', id=user.zID)
 
-@app.route('/duedates')
-def duedates():
-    return render_template('duedates.html')
+@app.route('/duedates/<id>', methods=["GET", "POST"])
+def duedates(id):
+    error=""
+    user = userSystem.getUser(id)
+    fileTypes = ['csv', 'ics']
+    try:
+        if request.method == 'POST':
+            for f in fileTypes:
+                x = request.form.get(f)
+                print(x)
+                redirect(url_for('getFile', fileType=x))
+
+    except Exception as e:
+        return render_template('duedates.html', id=user.zID, error=e)
+
+    return render_template('duedates.html', id=user.zID, error=error)
+
+@app.route('/getFile/<fileType>')
+def getFile(fileType):
+    return send_file('calender.'+fileType)
 
 
 

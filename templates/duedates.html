@@ -42,16 +42,20 @@
     <h5 class="header center col l12 s8 offset-s2">Export to:</h5>
 </div>
 <div class="row">
-    <div class="col l4 s8 offset-l4 offset-s2 center">
+    <form class="col l4 s8 offset-l4 offset-s2" method="POST">
         <div class="row">
             <div class="col l6 s6">
-                <button class="btn waves-effect waves-light full_width" type="submit" name="action">Google calendar</button>
+                <a href="/getFile/csv" target="blank"
+                <button class="btn waves-effect waves-light full_width" type="submit" name="csv" value="csv">Google calendar</button>
+                </a>
             </div>
             <div class="col l6 s6">
-                <button class="btn waves-effect waves-light full_width" type="submit" name="action">iCal</button>
+                <a href="/getFile/ics" target="blank"
+                <button class="btn waves-effect waves-light full_width" type="submit" name="ics" value="ics">iCal</button>
+                </a>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 <!-- <div class="footer">
     <button class="btn waves-effect waves-light" type="submit" name="action">Next

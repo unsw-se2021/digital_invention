@@ -13,8 +13,8 @@ class DeadlineSystem(object):
     def __init__(self):
         self.obj = []
 
-    def googleCalender():
-        SCOPES = 'https://www.googleapis.com/auth/calendar'
+    def googleCalender(self):
+        SCOPES = 'https://www.googleapis.com/auth/calendar/'
         store = file.Storage('storage.json')
         creds = store.get()
         if not creds or creds.invalid:
@@ -42,7 +42,7 @@ class DeadlineSystem(object):
         return None
 
     # Convert to csv
-    def calCsv(string, split):
+    def calCsv(self, string, split):
         with open('calender.csv', 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
             i = 0
@@ -71,7 +71,7 @@ class DeadlineSystem(object):
 
     # Convert to iCal
 
-    def calIcal():
+    def calIcal(self):
         convert = Convert()
         csv_file_location = 'calender.csv'
         ical_file_location = 'calender.ics'
@@ -102,16 +102,14 @@ class DeadlineSystem(object):
         convert.make_ical(csv_configs)
         convert.save_ical(ical_file_location)
 
+    def createCalender(self, string, outFile, split):
 
-
-
-    def createCalender(string, outFile, split):
-
-        calCsv(string, split)
+        self.calCsv(string, split)
         if outFile == 'ical':
-            calIcal()
+            self.calIcal()
 
 if __name__ == '__main__':
     test_string = 'Final exam1,05/03/13,10:00,12:00,Worth 20%,UNSW,Final exam2,05/03/13,9:00,12:00,Worth 20%,UNSW,Final exam3,05/03/13,10:00,12:00,Worth 20%,UNSW,'
-    createCalender(test_string, 'ical', 6)
-    #googleCalender()
+    deadlineSystem = DeadlineSystem()
+    deadlineSystem.createCalender(test_string, 'ical', 6)
+    deadlineSystem.googleCalender()
