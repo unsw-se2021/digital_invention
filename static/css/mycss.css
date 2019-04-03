@@ -30,6 +30,10 @@ div.footer:hover {
 	transition:.5s;
 }
 
+div.nav-content {
+    min-height: 30px;
+}
+
 container.loader {
     display: none;
 }
