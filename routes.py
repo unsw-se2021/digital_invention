@@ -66,3 +66,4 @@ def duedates():
 def logout():
     system.log_out_user(current_user.id)
     return redirect(url_for("login"))
+    
