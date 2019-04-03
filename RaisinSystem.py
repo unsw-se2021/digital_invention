@@ -7,12 +7,18 @@ import tabula
 import csv
 import os
 
+# deadlines
+from DeadlineSystem import DeadlineSystem
+from Deadline import Deadline
+from datetime import datetime, timedelta
+
 BASE_URL = "https://webcms3.cse.unsw.edu.au"
 DASHBOARD_URL = BASE_URL + "/dashboard"
 
 class RaisinSystem():
     def __init__(self):
         self._user_system = UserSystem()
+        self._deadline_system = DeadlineSystem()
 
     def authenticate_user(self, id, password):
         return self._user_system.authenticate_user(id, password)
@@ -48,6 +54,31 @@ class RaisinSystem():
 
     def get_due_dates(self, id, course):
         return self._user_system.get_due_dates(id, course)
+
+    # very dodgy system integration so far
+    def get_ical(self, id):
+        courses = self.get_courses(id)
+        deadlines = []
+        term_start = datetime.strptime("18/2/19", "%d/%m/%y")
+        for c in courses:
+            for d in c.due_dates:
+                if d.week == "Exam Period":
+                    continue
+                due_date = term_start + timedelta(days=7*(int(d.week) - 1))
+                deadlines.append(Deadline(c.name + " - " + d.name, due_date.isoformat(), "Description", "UNSW"))
+        self._deadline_system.createCalender(id, deadlines, "ical")
+
+    def get_gcal(self, id):
+        courses = self.get_courses(id)
+        deadlines = []
+        term_start = datetime.strptime("18/2/19", "%d/%m/%y")
+        for c in courses:
+            for d in c.due_dates:
+                if d.week == "Exam Period":
+                    continue
+                due_date = term_start + timedelta(days=7*(int(d.week) - 1))
+                deadlines.append(Deadline(c.name + " - " + d.name, due_date.isoformat(), "Description", "UNSW"))
+        self._deadline_system.googleCalender(deadlines)
 
     # rory's big parser
     def scrape_due_dates(self, id):
@@ -108,7 +139,7 @@ class RaisinSystem():
             x_due_search = re.findall("(?i)(([\w-]+) [0-9]+ due\\b)", whole_doc)
             for x in x_due_search:
                 if "((?i)(" + x[1] + " [0-9]+))" not in searches:
-                    print("adding " + x[1])
+                    # print("adding " + x[1])
                     searches.append("((?i)(" + x[1] + " [0-9]+))")
 
             for line in merged:
@@ -126,10 +157,12 @@ class RaisinSystem():
                     for d in date_search:
                         # search for a reference to a week in the same line
                         if (week_search_1):
-                            self.add_due_date(id, c.name, DueDate(d[0], "Week " + week_search_1.group(1)))
+                            # self.add_due_date(id, c.name, DueDate(d[0], "Week " + week_search_1.group(1)))
+                            self.add_due_date(id, c.name, DueDate(d[0], week_search_1.group(1)))
                             # assignment[d[0]] = week_search_1.group(1)
                         elif (week_search_2):
-                            self.add_due_date(id, c.name, DueDate(d[0], "Week " + week_search_2.group(1)))
+                            # self.add_due_date(id, c.name, DueDate(d[0], "Week " + week_search_2.group(1)))
+                            self.add_due_date(id, c.name, DueDate(d[0], week_search_2.group(1)))
                             # assignment[d[0]] = week_search_2.group(1)
 
             # search everywhere to see if there's a final exam

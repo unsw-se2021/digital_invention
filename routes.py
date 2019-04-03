@@ -1,5 +1,5 @@
 from server import app, system, login_manager
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, send_file
 from flask_login import UserMixin, login_user, login_required, current_user, logout_user
 
 @login_manager.user_loader
@@ -31,8 +31,6 @@ def courses():
                 else:
                     c.selected = False
 
-            # fix course choice error!!
-
             return redirect(url_for("events"))
 
         return render_template("courses.html", courses = courses)
@@ -55,11 +53,13 @@ def events():
 @app.route('/duedates', methods=["GET", "POST"])
 @login_required
 def duedates():
-    try:
-        courses = system.get_courses(current_user.id)
-        return render_template('duedates.html', courses = courses)
-    except:
-        return redirect(url_for("logout"))
+    # try:
+    courses = system.get_courses(current_user.id)
+    system.get_ical(current_user.id)
+    # system.get_gcal(current_user.id)
+    return render_template('duedates.html', courses = courses)
+    # except:
+    #     return redirect(url_for("logout"))
 
 @app.route('/logout')
 @login_required
@@ -67,3 +67,8 @@ def logout():
     system.log_out_user(current_user.id)
     return redirect(url_for("login"))
     
+@app.route('/calendar')
+@login_required
+def sendcalendar():
+    return send_file("calendars/" + current_user.id + "_calendar.ics")
+    # return send_from_directory('calendars',  current_user.id + ".ics")

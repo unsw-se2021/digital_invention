@@ -26,7 +26,7 @@
         <div class="row">
             <h6>{{c.name}}:</h6>
             {% for a in c.due_dates %}
-            <li>{{a.name}} - {{a.week}}</li>
+            <li>{{a.name}} - Week {{a.week}}</li>
             {% endfor %}
         </div>
         {% endif %}
@@ -40,10 +40,10 @@
     <div class="col l4 s8 offset-l4 offset-s2 center">
         <div class="row">
             <div class="col l6 s12">
-                <p><button class="btn waves-effect waves-light full_width blue" type="submit" name="action">Google calendar</button></p>
+                <p><a class="btn waves-effect waves-light full_width blue" href="https://www.google.com/calendar" target="_blank">Google Calendar</a></p>
             </div>
             <div class="col l6 s12">
-                <p><button class="btn waves-effect waves-light full_width blue" type="submit" name="action">iCal</button></p>
+                <p><a class="btn waves-effect waves-light full_width blue" href="/calendar">Apple Calendar</a></p>
             </div>
         </div>
     </div>

@@ -3,6 +3,7 @@ from flask import request, render_template, url_for, redirect
 from flask_login import UserMixin, login_manager, login_required, login_user, current_user, logout_user
 import requests
 from lxml import html
+import os
 from User import User
 
 BASE_URL = "https://webcms3.cse.unsw.edu.au"
@@ -42,6 +43,10 @@ class UserSystem():
 
     def log_out_user(self, id):
         self.navigateTo(id, LOGOUT_URL)
+        try:
+            os.remove("calendars/" + id + "_calendar.ics")
+        except OSError:
+            pass
         logout_user()
 
     def navigateTo(self, id, url):
