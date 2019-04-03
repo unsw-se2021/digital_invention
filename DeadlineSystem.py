@@ -14,7 +14,7 @@ class DeadlineSystem(object):
     def __init__(self):
         self.deadlines = []
 
-    def googleCalender(self):
+    def googleCalender(self, deadlines):
         SCOPES = 'https://www.googleapis.com/auth/calendar'
         store = file.Storage('storage.json')
         creds = store.get()
@@ -32,13 +32,13 @@ class DeadlineSystem(object):
             'summary': deadline.summary,
             'location': deadline.location,
             'description': deadline.description,
-            'start': { 'dateTime': datetime.now().isoformat()},
-            'end': { 'dateTime': deadline.deadline}
+            'start': { 'dateTime': datetime.now().isoformat(), 'timeZone': 'Australia/Sydney'},
+            'end': { 'dateTime': deadline.deadline,'timeZone': 'Australia/Sydney'}
         }
         return EVENT
 
     # Convert to csv
-    def calCsv(self, zid, deadli):
+    def calCsv(self, zid, deadlines):
         with open(zid+'.csv', 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
 
@@ -46,7 +46,7 @@ class DeadlineSystem(object):
             csvFile.write(csvHeader)
 
             for deadline in deadlines:
-                csvFile.write(deadline.toString())
+                csvFile.write(deadline.toString()+'\n')
             csvFile.close()
 
 
@@ -91,11 +91,16 @@ class DeadlineSystem(object):
             self.calIcal(zid)
 
 if __name__ == '__main__':
-    test_string = 'Final exam1,05/03/13,10:00,12:00,Worth 20%,UNSW,Final exam2,05/03/13,9:00,12:00,Worth 20%,UNSW,Final exam3,05/03/13,10:00,12:00,Worth 20%,UNSW,'
-    d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
-    deadlines = []
-    deadlines.append(d1)#d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
+    test_string = 'Final exam1,2019-04-04T09:00:00,Worth 20%,UNSW=Final exam2,2019-04-06T09:00:00,Worth 20%,UNSW=Final exam3,2019-04-09T09:00:00,Worth 20%,UNSW'
+    tt = test_string.split('=')
+    d = []
+    for t in tt:
+        t = (t.split(','))
+        d.append(Deadline(t[0], t[1], t[2], t[3]))
+    #d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
+    ##deadlines = []
+    #deadlines.append(d1)#d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
     #d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
     deadlineSystem = DeadlineSystem()
-    deadlineSystem.createCalender('z5170340', deadlines, 'ical')
-    #deadlineSystem.googleCalender()
+    deadlineSystem.createCalender('z5170340', d, 'ical')
+    deadlineSystem.googleCalender(d)
