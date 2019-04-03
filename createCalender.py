@@ -83,10 +83,12 @@ def calIcal():
     while i < len(convert.csv_data):
         row = convert.csv_data[i]
         start_date = row[csv_configs['CSV_START_DATE']] + '-' + row[2]
+        print(start_date)
         try:
             row[csv_configs['CSV_START_DATE']] = datetime.strptime(
                 start_date, '%m/%d/%y-%H:%M'
             )
+            print(row[csv_configs['CSV_START_DATE']])
             row[csv_configs['CSV_END_DATE']] = \
                 row[csv_configs['CSV_START_DATE']]+timedelta(hours=1)
             i += 1

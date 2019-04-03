@@ -71,19 +71,16 @@ class DeadlineSystem(object):
             row = convert.csv_data[i]
             start_date = row[csv_configs['CSV_START_DATE']] + '-' + row[2]
             end_date = row[csv_configs['CSV_END_DATE']] + '-' + row[4]
-            print(start_date, end_date)
             try:
-                print('here')
                 row[csv_configs['CSV_START_DATE']] = datetime.strptime(
-                    start_date, '%m/%d/%y-%H:%M:%S'
+                    start_date, '%Y/%m/%d-%H:%M:%S'
                 )
                 row[csv_configs['CSV_END_DATE']] = datetime.strptime(
-                    end_date, '%m/%d/%y-%H:%M:%S'
+                    end_date, '%Y/%m/%d-%H:%M:%S'
                 )
                 i += 1
             except ValueError:
                 convert.csv_data.pop(i)
-
         convert.make_ical(csv_configs)
         convert.save_ical(ical_file_location)
 
