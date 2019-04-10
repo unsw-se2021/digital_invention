@@ -1,2 +1,4 @@
-outline.pdf
-outline.csv
+/*.pdf
+/*.csv
+venv/
+__pycache__/

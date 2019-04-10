@@ -1,59 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
 
+<nav class="nav-extended blue">
+    <div class="nav-wrapper">
+        <span class="center brand-logo bebastitle">Raisin</span>
+        <ul id="nav-mobile" class="right">
+            <li><a href="{{url_for('logout')}}">Log out</a></li>
+        </ul>
+    </div>
+    <div class="nav-content center">
+        <a href="#!" class="breadcrumb">Courses</a>
+    </div>
+</nav>
+
 <div class="row"></div>
 <div class="row">
     <h5 class="center col l12 s8 offset-s2">Raisin will find dates for the following courses:</h5>
 </div>
 <div class="row">
-    <form class="col l4 s8 offset-l4 offset-s2">
+    <form class="col l4 s8 offset-l4 offset-s2" method="POST">
+        {% for c in courses %}
         <div class="row">
             <p>
                 <label>
-                    <input type="checkbox" class="filled-in" />
-                    <span>COMP1911</span>
+                    <input type="checkbox" class="filled-in checkbox-blue" name="{{c.name}}" checked/>
+                    <span>{{c.name}}</span>
+                    <br>
                 </label>
             </p>
         </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" checked="checked" />
-                    <span>COMP1511</span>
-                </label>
-            </p>
-        </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" />
-                    <span>SENG2021</span>
-                </label>
-            </p>
-        </div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" />
-                    <span>COMP2111</span>
-                </label>
-            </p>
-        </div>
-        <div class="divider"></div>
-        <div class="row">
-            <p>
-                <label>
-                    <input type="checkbox" class="filled-in" />
-                    <span>Select all</span>
-                </label>
-            </p>
-        </div>
+        {% endfor %}
         <div class="row center">
-            <a class="btn waves-effect waves-light" href="{{ url_for('processing') }}">Next
+            <button class="btn waves-effect waves-light blue" type="submit" name="action">Next
                 <i class="material-icons right">send</i>
-            </a>
+            </button>
         </div>
     </form>
 </div>
-
 {% endblock %}

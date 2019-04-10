@@ -1,33 +1,15 @@
-from flask import Flask, render_template
-app = Flask(__name__)
+from routes import app
+import ssl
+import threading
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+def run_http():
+    app.run(debug=False, host='0.0.0.0', port=80)
 
-@app.route('/courses')
-def courses():
-    return render_template('courses.html')
-
-@app.route('/processing')
-def processing():
-    return render_template('processing.html')
-
-@app.route('/duedates')
-def duedates():
-    return render_template('duedates.html')
-
-
-
-
-
-
-
-
-
-
-
-
+def run_https():
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.load_cert_chain('raisinplanner.crt', 'raisinplanner.key')
+    app.run(debug=False, host='0.0.0.0', port=443, ssl_context=context)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    threading.Thread(target=run_http).start()
+    threading.Thread(target=run_https).start()
