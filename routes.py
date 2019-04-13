@@ -4,6 +4,7 @@ from UserSystem import UserSystem
 from CourseSystem import CourseSystem
 from EventSystem import EventSystem
 #from
+from DeadlineSystem import DeadlineSystem
 
 
 app = Flask(__name__)
@@ -11,6 +12,7 @@ app = Flask(__name__)
 userSystem = UserSystem()
 courseSystem = CourseSystem()
 eventSystem = EventSystem()
+deadlineSystem = DeadlineSystem()
 ERROR_STATEMENT = "What you trying to do bruh!"
 
 
@@ -118,22 +120,32 @@ def processing(id):
 def duedates(id):
     error=""
     user = userSystem.getUser(id)
+
+    # Populate Deadlines
+
+
     fileTypes = ['csv', 'ics']
     try:
         if request.method == 'POST':
             for f in fileTypes:
                 x = request.form.get(f)
-                print(x)
-                redirect(url_for('getFile', fileType=x))
+                if x in fileTypes:
+                    redirect(url_for('getFile', fileType=x))
+
+            # if post request is google then invoke
+            # deadlineSystem.googleCalender(deadlines)
 
     except Exception as e:
         return render_template('duedates.html', id=user.zID, error=e)
 
     return render_template('duedates.html', id=user.zID, error=error)
 
-@app.route('/getFile/<fileType>')
-def getFile(fileType):
-    return send_file('calender.'+fileType)
+@app.route('/getFile/<id>/<fileType>')
+def getFile(id, fileType):
+    user = userSystem.getUser(id)
+    # Create File
+    # deadlineSystem.createCalender(user.zID, deadlines, 'fileType')
+    return send_file((user.zID+'.'+fileType), attachment_filename=(user.zID+'.'+fileType))
 
 
 
