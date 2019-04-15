@@ -68,6 +68,19 @@ class RaisinSystem():
                 deadlines.append(Deadline(c.name + " - " + d.name, due_date.isoformat(), "Description", "UNSW"))
         self._deadline_system.createCalender(id, deadlines, "ical")
 
+    # Get Deadline Object
+    def get_deadlines(self, id):
+        courses = self.get_courses(id)
+        deadlines = []
+        term_start = datetime.strptime("18/2/19", "%d/%m/%y")
+        for c in courses:
+            for d in c.due_dates:
+                if d.week == "Exam Period":
+                    continue
+                due_date = term_start + timedelta(days=7*(int(d.week) - 1))
+                deadlines.append(Deadline(c.name + " - " + d.name, due_date.isoformat(), "Description", "UNSW"))
+        return deadlines
+
     def get_gcal(self, id):
         courses = self.get_courses(id)
         deadlines = []
@@ -131,7 +144,7 @@ class RaisinSystem():
 
             # parse course outline html for assignment dates
             # assignment = {}
-            
+
             # searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)((del|deliverable) [0-9]+))", "((?i)([\w-]+ exam\\b))"]
             searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)([\w-]+ exam\\b))"]
 
@@ -150,7 +163,7 @@ class RaisinSystem():
 
                 week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
                 week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
-                
+
                 for s in searches:
                     # search for references to assignments
                     date_search = re.findall(s, line_formatted)

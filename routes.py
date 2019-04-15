@@ -40,35 +40,62 @@ def courses():
 @app.route('/events', methods=["GET", "POST"])
 @login_required
 def events():
-    try:
-        if request.method == "POST":
-            # write to necessary stuff
-            system.scrape_due_dates(current_user.id)
-            return redirect(url_for("duedates"))
+    #try:
+    if request.method == "POST":
+        # write to necessary stuff
+        system.scrape_due_dates(current_user.id)
+        return redirect(url_for("duedates"))
 
-        return render_template("events.html")
-    except:
-        return redirect(url_for("logout"))
+    return render_template("events.html")
+    #except:
+        #return redirect(url_for("logout"))
 
 @app.route('/duedates', methods=["GET", "POST"])
 @login_required
 def duedates():
-    # try:
+    try:
+        courses = system.get_courses(current_user.id)
+        system._deadline_system.createCalender(current_user.id, system.get_deadlines(current_user.id))
+
+        #system.get_ical(current_user.id)
+        # system.get_gcal(current_user.id)
+        return render_template('duedates.html', courses = courses)
+    except:
+         return redirect(url_for("logout"))
+
+
+@app.route('/duedates/<show>', methods=["GET", "POST"])
+@login_required
+def duedatesShow(show):
+    #try:
     courses = system.get_courses(current_user.id)
-    system.get_ical(current_user.id)
-    # system.get_gcal(current_user.id)
-    return render_template('duedates.html', courses = courses)
-    # except:
-    #     return redirect(url_for("logout"))
+
+    if request.method == "POST":
+        d = system.get_deadlines(current_user.id)
+        if 'gid' == show:
+            error = system._deadline_system.gcal(request.form['gID'], d)
+            return redirect(url_for('duedatesShow', show=error))
+        elif 'eadd' == show:
+            error = system._deadline_system.sendEmail(current_user.id, request.form['eAdd'])
+            return redirect(url_for('duedatesShow', show=error))
+        else:
+            render_template('duedates.html', courses = courses, show=show)
+
+    return render_template('duedates.html', courses = courses, show=show)
+
+    #except:
+        #return redirect(url_for("logout"))
+
+
 
 @app.route('/logout')
 @login_required
 def logout():
     system.log_out_user(current_user.id)
     return redirect(url_for("login"))
-    
-@app.route('/calendar')
+
+@app.route('/calender/<fileType>')
 @login_required
-def sendcalendar():
-    return send_file("calendars/" + current_user.id + "_calendar.ics")
+def sendcalendar(fileType):
+    return send_file("calender/" + current_user.id + "."+fileType)
     # return send_from_directory('calendars',  current_user.id + ".ics")

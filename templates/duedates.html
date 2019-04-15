@@ -36,16 +36,89 @@
 <div class="row">
     <h5 class="header center col l12 s8 offset-s2">Export to:</h5>
 </div>
+
 <div class="row">
     <div class="col l4 s8 offset-l4 offset-s2 center">
         <div class="row">
             <div class="col l6 s12">
-                <p><a class="btn waves-effect waves-light full_width blue" href="https://www.google.com/calendar" target="_blank">Google Calendar</a></p>
+                <p>
+                    <a href="/duedates/gid">
+                        <button class="btn waves-effect waves-light blue full_width">Google Calender</button>
+                    </a>
+                </p>
             </div>
             <div class="col l6 s12">
-                <p><a class="btn waves-effect waves-light full_width blue" href="/calendar">Apple Calendar</a></p>
+                <p>
+                    <a href="/duedates/eadd">
+                        <button class="btn waves-effect waves-light blue full_width">Email</button>
+                    </a>
+                </p>
             </div>
         </div>
     </div>
 </div>
+<div class="row">
+    <form class="col l4 s8 offset-l4 offset-s2 center" method="POST">
+        <div class="row">
+            {% if "gid" == show %}
+            <div class="row center">
+                <p>
+                    <a target="_blank" rel="noopener noreferrer" href="https://accounts.google.com/o/oauth2/auth?client_id=977810044263-vk1r3up83p2ducal2887bpa4d3fa7flm.apps.googleusercontent.com&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar&access_type=offline&response_type=code">Get Google Code!</a>
+                </p>
+                <div class="input-field">
+                    <i class="material-icons prefix">security</i>
+                    <input id="gid" type="text" name="gID" value="{{request.form.gID}}">
+                    <label for="gid">Paste Google Verification Code Here!</label>
+                </div>
+                <div class="row center">
+                <!-- <i class="material-icons right">send</i> CANNOT GET THE ARROW INSIDE LOGIN BUTTON -->
+                <input class="btn waves-effect waves-light blue" value="Verify Code!" type="submit">
+                </div>
+            </div>
+            {% elif "eadd" == show %}
+            <div class="row center">
+                <div class="input-field">
+                     <i class="material-icons prefix">account_box</i>
+                     <input id="eadd" type="email" name="eAdd" value="{{request.form.eAdd}}">
+                     <label for="eadd">Email</label>
+                 </div>
+                 <div class="row center">
+                     <!-- <i class="material-icons right">send</i> CANNOT GET THE ARROW INSIDE LOGIN BUTTON -->
+                    <input class="btn waves-effect waves-light blue" value="Email Files" type="submit">
+                </div>
+            </div>
+            {% else %}
+            <div class="row">
+                <h5 class="center col l12 s8 offset-s2">{{show}}</h5>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+<div class="row">
+    <div class="col l4 s8 offset-l4 offset-s2 center">
+        <div class="row">
+            <div class="col l6 s12">
+                <p>
+                    <a href="/calender/csv" target="blank"
+                        <button class="btn waves-effect waves-light blue full_width">CSV</button>
+                    </a>
+                </p>
+            </div>
+            <div class="col l6 s12">
+                <p>
+                    <a href="/calender/ics" target="blank"
+                        <button class="btn waves-effect waves-light blue full_width">iCalender</button>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
 {% endblock content %}
