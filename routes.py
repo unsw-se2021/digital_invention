@@ -53,13 +53,13 @@ def events():
 @app.route('/duedates', methods=["GET", "POST"])
 @login_required
 def duedates():
-    # try:
-    courses = system.get_courses(current_user.id)
-    system.get_ical(current_user.id)
-    # system.get_gcal(current_user.id)
-    return render_template('duedates.html', courses = courses)
-    # except:
-    #     return redirect(url_for("logout"))
+    try:
+        courses = system.get_courses(current_user.id)
+        system.get_ical(current_user.id)
+        # system.get_gcal(current_user.id)
+        return render_template('duedates.html', courses = courses)
+    except:
+        return redirect(url_for("logout"))
 
 @app.route('/logout')
 @login_required
