@@ -22,6 +22,7 @@ SYSTEM_SERVER   = 'smtp.gmail.com'
 class DeadlineSystem(object):
     def __init__(self):
         self.deadlines = []
+        self.time_now  = datetime.now().isoformat().partition('.')[0]
 
     def sendEmail(self, userID, recieverEmail):
         try:
@@ -51,7 +52,7 @@ class DeadlineSystem(object):
             msg = msg.as_string()
             server.sendmail(SYSTEM_EMAIL, recieverEmail, msg)
             server.close()
-            return True
+            return "Email Sent!"
         except Exception as error:
             return error
 
@@ -64,23 +65,45 @@ class DeadlineSystem(object):
         creds = store.get()
         if not creds or creds.invalid:
             flow = client.flow_from_clientsecrets('client_secrets.json', SCOPES)
-            #print(flow.authorization_url())
+            #print(flow.redirect_uri)
             creds = tools.run_flow(flow, store)
+
         GCAL = discovery.build('calendar', 'v3', http=creds.authorize(Http()))
         for deadline in deadlines:
             e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=self.getEventObject(deadline)).execute()
         os.remove('storage.json')
 
+    def gflow(self):
+        SCOPES = 'https://www.googleapis.com/auth/calendar'
+        flow = client.flow_from_clientsecrets('client_secrets.json', SCOPES)
+        flow.redirect_uri = client.OOB_CALLBACK_URN
+        return flow
+        #flow.step2input('Code')
+
+    def gcal(self, code, deadlines):
+        flow = self.gflow()
+        try:
+            credential = flow.step2_exchange(code, http=Http())
+        except client.FlowExchangeError as e:
+            return ('Authentication has failed: {0}'.format(e))
+        GCAL = discovery.build('calendar', 'v3', http=credential.authorize(Http()))
+        count=0
+        for deadline in deadlines:
+            eve = self.getEventObject(deadline)
+            if eve != None:
+                count+=1
+                e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=eve).execute()
+        return ('Added {} events to your Google Calender!'.format(count))
     def getEventObject(self, deadline):
         GMT_OFF = '+11:00'
+        if (deadline.checkPassed(self.time_now)) == True: return None
         EVENT = {
             'summary': deadline.summary,
             'location': deadline.location,
             'description': deadline.description,
-            'start': { 'dateTime': datetime.now().isoformat().partition('.')[0], 'timeZone': 'Australia/Sydney'},
+            'start': { 'dateTime': self.time_now, 'timeZone': 'Australia/Sydney'},
             'end': { 'dateTime': deadline.deadline,'timeZone': 'Australia/Sydney'}
         }
-        print(EVENT)
         return EVENT
 
     # Convert to csv
@@ -130,14 +153,12 @@ class DeadlineSystem(object):
         convert.make_ical(csv_configs)
         convert.save_ical(ical_file_location)
 
-    def createCalender(self, zid, deadlines, outFile):
-
+    def createCalender(self, zid, deadlines):
         self.calCsv(zid, deadlines)
-        if outFile == 'ical':
-            self.calIcal(zid)
+        self.calIcal(zid)
 
 if __name__ == '__main__':
-    test_string = 'Final exam1,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam2,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam3,2019-04-15T09:00:00,Worth 20%,UNSW'
+    test_string = 'Final exam1,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam2,2019-04-16T09:00:00,Worth 20%,UNSW=Final exam3,2019-04-17T09:00:00,Worth 20%,UNSW'
     tt = test_string.split('=')
     d = []
     for t in tt:
@@ -148,6 +169,15 @@ if __name__ == '__main__':
     #deadlines.append(d1)#d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
     #d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
     deadlineSystem = DeadlineSystem()
-    deadlineSystem.createCalender('z5170340', d, 'ical')
-    deadlineSystem.googleCalender(d)
-    print(deadlineSystem.sendEmail('z5170340', "faizather11@gmail.com"))
+    deadlineSystem.createCalender('z5170340', d)
+
+
+    flow = deadlineSystem.gflow()
+    code = input(flow.step1_get_authorize_url()+'\nCODE:')
+    print(deadlineSystem.gcal(flow, code, d))
+
+    #deadlineSystem.getEventObject(d[0])
+
+    #print(deadlineSystem.gcal('4/LAEgftMm8k4Em6AEM36266NPsEnnfYhZq77hNtJImT6B5ZtjSOjkX7w', d))
+    #deadlineSystem.googleCalender('z5170340')
+    #print(deadlineSystem.sendEmail('z5170340', "email@example.com"))

@@ -3,7 +3,7 @@ from User import User
 from UserSystem import UserSystem
 from CourseSystem import CourseSystem
 from EventSystem import EventSystem
-#from
+from Deadline import Deadline
 from DeadlineSystem import DeadlineSystem
 
 
@@ -116,29 +116,57 @@ def processing(id):
     user = userSystem.getUser(id)
     return render_template('processing.html', id=user.zID)
 
-@app.route('/duedates/<id>', methods=["GET", "POST"])
+@app.route('/duedates/<id>/', methods=["GET", "POST"])
 def duedates(id):
     error=""
     user = userSystem.getUser(id)
-
-    # Populate Deadlines
-
-
-    fileTypes = ['csv', 'ics']
+    ### Test
+    test_string = 'Final exam1,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam2,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam3,2019-04-15T09:00:00,Worth 20%,UNSW'
+    tt = test_string.split('=')
+    d = []
+    for t in tt:
+        t = (t.split(','))
+        d.append(Deadline(t[0], t[1], t[2], t[3]))
+    ### Endtest
+    deadlineSystem.createCalender(user.zID, d)
+    '''
     try:
         if request.method == 'POST':
-            for f in fileTypes:
-                x = request.form.get(f)
-                if x in fileTypes:
-                    redirect(url_for('getFile', fileType=x))
-
-            # if post request is google then invoke
-            # deadlineSystem.googleCalender(deadlines)
+            if show != None:
+                redirect(url_for('duedatesShow', id=user.zID, show=))
+            else:
+                return render_template('duedates.html', id=user.zID, error=error)
 
     except Exception as e:
         return render_template('duedates.html', id=user.zID, error=e)
-
+    '''
     return render_template('duedates.html', id=user.zID, error=error)
+
+@app.route('/duedates/<id>/<show>', methods=["GET", "POST"])
+def duedatesShow(id, show):
+    error=""
+    user = userSystem.getUser(id)
+    test_string = 'Final exam1,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam2,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam3,2019-04-15T09:00:00,Worth 20%,UNSW'
+    tt = test_string.split('=')
+    d = []
+    for t in tt:
+        t = (t.split(','))
+        d.append(Deadline(t[0], t[1], t[2], t[3]))
+    ### Endtest
+    deadlineSystem.createCalender(user.zID, d)
+    try:
+        if request.method == 'POST':
+            if 'gid' == show:
+                error = deadlineSystem.gcal(request.form['gID'], d)
+            elif 'eadd' == show:
+                error = deadlineSystem.sendEmail(user.zID, request.form['eAdd'])
+            else:
+                render_template('duedates.html', id=user.zID, error=error, show=show)
+    except Exception as e:
+        render_template('duedates.html', id=user.zID, error=e, show=show)
+
+    return render_template('duedates.html', id=user.zID, error=error, show=show)
+
 
 @app.route('/getFile/<id>/<fileType>')
 def getFile(id, fileType):

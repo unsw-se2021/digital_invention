@@ -18,6 +18,11 @@ class Deadline(object):
             return date + ',' + time
         return self.summary+','+convertdate(datetime.now().isoformat())+','+convertdate(self.deadline)+','+self.description+','+self.location
 
+    def timeTo(self, now):
+        return datetime.strptime(self.deadline, '%Y-%m-%dT%H:%M:%S')-datetime.strptime(now, '%Y-%m-%dT%H:%M:%S')
+    def checkPassed(self, now):
+        return datetime.strptime(self.deadline, '%Y-%m-%dT%H:%M:%S')<datetime.strptime(now, '%Y-%m-%dT%H:%M:%S')
+
 '''
 FORMAT
         GMT_OFF = '+11:00'      # PDT/MST/GMT-7
