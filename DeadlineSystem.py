@@ -29,7 +29,7 @@ class DeadlineSystem(object):
             server = smtplib.SMTP_SSL(SYSTEM_SERVER, 465)
             server.login(SYSTEM_EMAIL, SYSTEM_PASSWORD)
             subject = 'Deadline: Files'
-            body = 'Hey there,\n\nThank you for using Raisin Planner!\n\nHave a nice semester. We hope to see you again next time!\n\n\n- Raisin Team'
+            body = 'Hi!\n\nThanks for using Raisin, and all the best for the term ahead.\n\nSincerely, Raisin Team'
 
             msg = MIMEMultipart()
             msg['From']="Raisin Team"
@@ -41,14 +41,14 @@ class DeadlineSystem(object):
             files = ['.csv','.ics']
             i=0
             for f in files:
-                files[i]='calender/'+userID+f
+                files[i]='calendars/'+userID+f
                 i+=1
             for f in files:
                 attachment = open(f, 'rb')
                 part = MIMEBase('application', 'octet-stream')
                 part.set_payload((attachment).read())
                 encoders.encode_base64(part)
-                part.add_header('Content-Disposition', "attachment; filename= "+"Calender."+f[-3:])
+                part.add_header('Content-Disposition', "attachment; filename= "+"calendar."+f[-3:])
 
                 msg.attach(part)
                 attachment.close()
@@ -63,7 +63,7 @@ class DeadlineSystem(object):
 
 
 
-    def googleCalender(self, deadlines):
+    def googleCalendar(self, deadlines):
         SCOPES = 'https://www.googleapis.com/auth/calendar'
         store = file.Storage('storage.json')
         creds = store.get()
@@ -97,7 +97,7 @@ class DeadlineSystem(object):
             if eve != None:
                 count+=1
                 e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=eve).execute()
-        return ('Added {} events to your Google Calender!'.format(count))
+        return ('Added {} events to your Google Calendar!'.format(count))
     def getEventObject(self, deadline):
         GMT_OFF = '+11:00'
         if (deadline.checkPassed(self.time_now)) == True: return None
@@ -105,14 +105,14 @@ class DeadlineSystem(object):
             'summary': deadline.summary,
             'location': deadline.location,
             'description': deadline.description,
-            'start': { 'dateTime': self.time_now, 'timeZone': 'Australia/Sydney'},
+            'start': { 'dateTime': deadline.deadline, 'timeZone': 'Australia/Sydney'},
             'end': { 'dateTime': deadline.deadline,'timeZone': 'Australia/Sydney'}
         }
         return EVENT
 
     # Convert to csv
     def calCsv(self, zid, deadlines):
-        with open('calender/'+zid+'.csv', 'w') as csvFile:
+        with open('calendars/'+zid+'.csv', 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
 
             csvHeader = 'Subject,Start date,Start time,End date,End time,Description,Location\n'
@@ -127,8 +127,8 @@ class DeadlineSystem(object):
 
     def calIcal(self, zid):
         convert = Convert()
-        csv_file_location = 'calender/'+zid+'.csv'
-        ical_file_location = 'calender/'+zid+'.ics'
+        csv_file_location = 'calendars/'+zid+'.csv'
+        ical_file_location = 'calendars/'+zid+'.ics'
         csv_configs = {
             'HEADER_COLUMNS_TO_SKIP': 1,
             'CSV_NAME': 0,
@@ -157,7 +157,7 @@ class DeadlineSystem(object):
         convert.make_ical(csv_configs)
         convert.save_ical(ical_file_location)
 
-    def createCalender(self, zid, deadlines):
+    def createCalendar(self, zid, deadlines):
         self.calCsv(zid, deadlines)
         self.calIcal(zid)
 
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     #deadlines.append(d1)#d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
     #d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
     deadlineSystem = DeadlineSystem()
-    deadlineSystem.createCalender('z5170340', d)
+    deadlineSystem.createCalendar('z5170340', d)
 
 
     flow = deadlineSystem.gflow()
@@ -183,5 +183,5 @@ if __name__ == '__main__':
     #deadlineSystem.getEventObject(d[0])
 
     #print(deadlineSystem.gcal('4/LAEgftMm8k4Em6AEM36266NPsEnnfYhZq77hNtJImT6B5ZtjSOjkX7w', d))
-    #deadlineSystem.googleCalender('z5170340')
+    #deadlineSystem.googleCalendar('z5170340')
 #print(deadlineSystem.sendEmail('z5170340', "email@example.com"))

@@ -9,3 +9,4 @@ csv_ical==1.0.3
 google_api_python_client==1.7.8
 beautifulsoup4==4.7.1
 tabula==1.0.5
+oauth2client==4.1.3

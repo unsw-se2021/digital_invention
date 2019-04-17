@@ -44,7 +44,8 @@ class UserSystem():
     def log_out_user(self, id):
         self.navigateTo(id, LOGOUT_URL)
         try:
-            os.remove("calendars/" + id + "_calendar.ics")
+            os.remove("calendars/" + id + ".ics")
+            os.remove("calendars/" + id + ".csv")
         except OSError:
             pass
         logout_user()

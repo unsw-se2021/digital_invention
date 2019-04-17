@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from csv_ical import Convert
 import csv
 
-def googleCalender():
+def googleCalendar():
     SCOPES = 'https://www.googleapis.com/auth/calendar'
     store = file.Storage('storage.json')
     creds = store.get()
@@ -37,7 +37,7 @@ def getEventObject():
 
 # Convert to csv
 def calCsv(string, split):
-    with open('calender.csv', 'w') as csvFile:
+    with open('calendars.csv', 'w') as csvFile:
         csvWriter = csv.writer(csvFile)
         i = 0
         line = ''
@@ -67,8 +67,8 @@ def calCsv(string, split):
 
 def calIcal():
     convert = Convert()
-    csv_file_location = 'calender.csv'
-    ical_file_location = 'calender.ics'
+    csv_file_location = 'calendars.csv'
+    ical_file_location = 'calendars.ics'
     csv_configs = {
         'HEADER_COLUMNS_TO_SKIP': 1,
         'CSV_NAME': 0,
@@ -99,7 +99,7 @@ def calIcal():
 
 
 
-def createCalender(string, outFile, split):
+def createCalendar(string, outFile, split):
 
     calCsv(string, split)
     if outFile == 'ical':
@@ -107,5 +107,5 @@ def createCalender(string, outFile, split):
 
 if __name__ == '__main__':
     test_string = 'Final exam1,05/03/13,10:00,12:00,Worth 20%,UNSW,Final exam2,05/03/13,9:00,12:00,Worth 20%,UNSW,Final exam3,05/03/13,10:00,12:00,Worth 20%,UNSW,'
-    createCalender(test_string, 'ical', 6)
-    #googleCalender()
+    createCalendar(test_string, 'ical', 6)
+    #googleCalendar()

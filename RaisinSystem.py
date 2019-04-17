@@ -55,19 +55,6 @@ class RaisinSystem():
     def get_due_dates(self, id, course):
         return self._user_system.get_due_dates(id, course)
 
-    # very dodgy system integration so far
-    def get_ical(self, id):
-        courses = self.get_courses(id)
-        deadlines = []
-        term_start = datetime.strptime("18/2/19", "%d/%m/%y")
-        for c in courses:
-            for d in c.due_dates:
-                if d.week == "Exam Period":
-                    continue
-                due_date = term_start + timedelta(days=7*(int(d.week) - 1))
-                deadlines.append(Deadline(c.name + " - " + d.name, due_date.isoformat(), "Description", "UNSW"))
-        self._deadline_system.createCalender(id, deadlines, "ical")
-
     # Get Deadline Object
     def get_deadlines(self, id):
         courses = self.get_courses(id)
@@ -75,23 +62,12 @@ class RaisinSystem():
         term_start = datetime.strptime("18/2/19", "%d/%m/%y")
         for c in courses:
             for d in c.due_dates:
+                # fix this
                 if d.week == "Exam Period":
                     continue
                 due_date = term_start + timedelta(days=7*(int(d.week) - 1))
                 deadlines.append(Deadline(c.name + " - " + d.name, due_date.isoformat(), "Description", "UNSW"))
         return deadlines
-
-    def get_gcal(self, id):
-        courses = self.get_courses(id)
-        deadlines = []
-        term_start = datetime.strptime("18/2/19", "%d/%m/%y")
-        for c in courses:
-            for d in c.due_dates:
-                if d.week == "Exam Period":
-                    continue
-                due_date = term_start + timedelta(days=7*(int(d.week) - 1))
-                deadlines.append(Deadline(c.name + " - " + d.name, due_date.isoformat(), "Description", "UNSW"))
-        self._deadline_system.googleCalender(deadlines)
 
     # rory's big parser
     def scrape_due_dates(self, id):
