@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 
 BASE_URL = "https://webcms3.cse.unsw.edu.au"
 DASHBOARD_URL = BASE_URL + "/dashboard"
+CALENDAR_URL = "https://student.unsw.edu.au/calendar"
 
 class RaisinSystem():
     def __init__(self):
@@ -68,15 +69,45 @@ class RaisinSystem():
     def get_deadlines(self, id):
         courses = self.get_courses(id)
         deadlines = []
-        term_start = datetime.strptime("18/2/19", "%d/%m/%y")
+        # make this slightly less hard coded
+        term_start = datetime.strptime("13/2/2019", "%d/%m/%Y")
+        exam_start = datetime.strptime("2/5/2019", "%d/%m/%Y")
         for c in courses:
             for d in c.due_dates:
-                # fix this
                 if d.week == "Exam Period":
-                    continue
-                due_date = term_start + timedelta(days=7*(int(d.week) - 1))
-                deadlines.append(Deadline(c.name + " - " + d.name, due_date, "Due this week", "UNSW"))
+                    due_date = exam_start
+                    deadlines.append(Deadline(c.name + " - " + d.name, due_date, "During exam period", "UNSW"))
+                else:
+                    due_date = term_start + timedelta(days=7*(int(d.week) - 1))
+                    deadlines.append(Deadline(c.name + " - " + d.name, due_date, "Due in this week", "UNSW"))
         return deadlines
+
+    # def get_dates(self):
+    #     # separate session from webcms
+    #     session = requests.session()
+    #     result = session.get(CALENDAR_URL, headers = dict(referer = CALENDAR_URL))
+    #     doc = html.fromstring(result.content)
+
+    #     for t in range(1,4):
+    #         print(str(t))
+    #         start_week = False
+    #         exam_week = False
+    #         all_tables = doc.xpath(".//tr")
+    #         for table in all_tables:
+    #             table = table.text_content()
+    #             print(table)
+    #             if not start_week:
+    #                 start_week = re.search("(?i)Teaching period T" + str(t) + "([0-9]+ (jan|feb|mar|apr|may|june|july|aug|sep|oct|nov|dec))", table)
+    #             if not exam_week:
+    #                 exam_week = re.search("(?i)Exams T" + str(t) + "([0-9]+ (jan|feb|mar|apr|may|june|july|aug|sep|oct|nov|dec))", table)
+    #             if start_week and exam_week:
+    #                 break
+
+    #         start_week_date = datetime.strptime(start_week.group(1) + " 2019", "%d %b %Y")
+    #         exam_week_date = datetime.strptime(start_week.group(1) + " 2019", "%d %b %Y")
+
+    #         if datetime.now() < exam_week_date:
+    #             return (start_week_date, exam_week_date) 
 
     # rory's big parser
     def scrape_due_dates(self, id):
@@ -168,10 +199,3 @@ class RaisinSystem():
             final_exam_search_2 = re.search("(?i)Final Exam\\b", whole_doc)
             if (final_exam_search_1 or final_exam_search_2):
                 self.add_due_date(id, c.name, DueDate("Final Exam", "Exam Period"))
-
-            # print("Due dates:")
-            # if (not assignment):
-            #     print("No dates found")
-            # else:
-            #     for a in assignment:
-            #         print(a + " - Week " + assignment[a])
