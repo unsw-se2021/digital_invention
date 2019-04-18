@@ -69,37 +69,32 @@
 </div>
 
 {% if message %}
-<div class="row">
-    <div class="center col l12 s8 offset-s2">
-        <h6>{{message}}.</h5>
-    </div>
-</div>
+<script>M.toast({html: '{{message}}'})</script>
 {% endif %}
 
 <div id="modal1" class="modal">
-    <form class="modal-content col l4 s8 offset-l4 offset-s2 center" method="POST">
+    <form class="modal-content center" method="POST">
         <p>Please enter your Google verification code:</p>
         <div class="input-field">
             <i class="material-icons prefix">security</i>
             <input id="gid" type="text" name="gID">
             <label for="gid">Paste code here</label>
         </div>
-        <button class="btn waves-effect waves-light blue" type="submit" name="submit_gID">Done
+        <button class="btn waves-effect waves-light blue modal-close" onclick="M.toast({html: 'Please wait...'})" type="submit" name="submit_gID">Done
             <i class="material-icons right">send</i>
         </button>
     </form>
 </div>
 
 <div id="modal2" class="modal">
-    <form class="modal-content col l4 s8 offset-l4 offset-s2 center" method="POST">
+    <form class="modal-content center" method="POST">
         <p>Please enter your email address:</p>
         <div class="input-field">
             <i class="material-icons prefix">account_box</i>
             <input id="eadd" type="text" name="eAdd">
             <label for="eadd">Email address</label>
         </div>
-        <p>This will send you an email containing both CSV and ICS (Apple calendar) files, which you can import into your calendar later.</p>
-        <button class="btn waves-effect waves-light blue" type="submit" name="submit_eAdd">Done
+        <button class="btn waves-effect waves-light blue modal-close" onclick="M.toast({html: 'Please wait...'})" type="submit" name="submit_eAdd">Done
             <i class="material-icons right">send</i>
         </button>
     </form>

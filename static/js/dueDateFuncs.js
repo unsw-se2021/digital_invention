@@ -10,4 +10,3 @@ function activateEmail() {
 $(document).ready(function(){
     $('.modal').modal();
 });
-

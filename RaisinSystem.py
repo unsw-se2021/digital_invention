@@ -66,7 +66,7 @@ class RaisinSystem():
                 if d.week == "Exam Period":
                     continue
                 due_date = term_start + timedelta(days=7*(int(d.week) - 1))
-                deadlines.append(Deadline(c.name + " - " + d.name, due_date.isoformat(), "Description", "UNSW"))
+                deadlines.append(Deadline(c.name + " - " + d.name, due_date, "Description", "UNSW"))
         return deadlines
 
     # rory's big parser

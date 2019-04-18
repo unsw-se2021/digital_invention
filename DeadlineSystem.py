@@ -12,7 +12,8 @@ from email import encoders
 from Deadline import Deadline
 
 from datetime import datetime, timedelta
-from csv_ical import Convert
+# from csv_ical import Convert
+from ics import Calendar, Event
 import csv
 
 SYSTEM_EMAIL    = 'systemraisin@gmail.com'
@@ -56,9 +57,10 @@ class DeadlineSystem(object):
             msg = msg.as_string()
             server.sendmail(SYSTEM_EMAIL, recieverEmail, msg)
             server.close()
-            return "Email Sent!"
+            return "Email sent successfully"
         except Exception as error:
-            return error
+            # return error
+            return "Error occurred, please try again"
 
 
 
@@ -89,7 +91,8 @@ class DeadlineSystem(object):
         try:
             credential = flow.step2_exchange(code, http=Http())
         except client.FlowExchangeError as e:
-            return ('Authentication has failed: {0}'.format(e))
+            # return ('Authentication has failed: {0}'.format(e))
+            return "Error occurred, please try again"
         GCAL = discovery.build('calendar', 'v3', http=credential.authorize(Http()))
         count=0
         for deadline in deadlines:
@@ -100,13 +103,12 @@ class DeadlineSystem(object):
         return ('Added {} events to your Google Calendar!'.format(count))
     def getEventObject(self, deadline):
         GMT_OFF = '+11:00'
-        if (deadline.checkPassed(self.time_now)) == True: return None
         EVENT = {
             'summary': deadline.summary,
             'location': deadline.location,
             'description': deadline.description,
-            'start': { 'dateTime': deadline.deadline, 'timeZone': 'Australia/Sydney'},
-            'end': { 'dateTime': deadline.deadline,'timeZone': 'Australia/Sydney'}
+            'start': { 'dateTime': deadline.deadline.isoformat(), 'timeZone': 'Australia/Sydney'},
+            'end': { 'dateTime': deadline.deadline.isoformat(),'timeZone': 'Australia/Sydney'}
         }
         return EVENT
 
@@ -115,7 +117,7 @@ class DeadlineSystem(object):
         with open('calendars/'+zid+'.csv', 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
 
-            csvHeader = 'Subject,Start date,Start time,End date,End time,Description,Location\n'
+            csvHeader = 'Subject,Date,Description,Location\n'
             csvFile.write(csvHeader)
 
             for deadline in deadlines:
@@ -125,41 +127,51 @@ class DeadlineSystem(object):
 
     # Convert to iCal
 
-    def calIcal(self, zid):
-        convert = Convert()
-        csv_file_location = 'calendars/'+zid+'.csv'
-        ical_file_location = 'calendars/'+zid+'.ics'
-        csv_configs = {
-            'HEADER_COLUMNS_TO_SKIP': 1,
-            'CSV_NAME': 0,
-            'CSV_START_DATE': 1,
-            'CSV_END_DATE': 3,
-            'CSV_DESCRIPTION': 5,
-            'CSV_LOCATION': 6,
-        }
+    def calIcal(self, zid, deadlines):
+        c = Calendar()
+        for d in deadlines:
+            e = Event()
+            e.name = d.summary
+            e.begin = d.deadline.isoformat()
+            e.location = d.location
+            e.description = d.description
+            c.events.add(e)
+        with open('calendars/' + zid + '.ics', 'w') as f:
+            f.writelines(c)
+        # convert = Convert()
+        # csv_file_location = 'calendars/'+zid+'.csv'
+        # ical_file_location = 'calendars/'+zid+'.ics'
+        # csv_configs = {
+        #     'HEADER_COLUMNS_TO_SKIP': 1,
+        #     'CSV_NAME': 0,
+        #     'CSV_START_DATE': 1,
+        #     'CSV_END_DATE': 1,
+        #     'CSV_DESCRIPTION': 2,
+        #     'CSV_LOCATION': 3,
+        # }
 
-        convert.read_csv(csv_file_location, csv_configs)
-        i = 0
-        while i < len(convert.csv_data):
-            row = convert.csv_data[i]
-            start_date = row[csv_configs['CSV_START_DATE']] + '-' + row[2]
-            end_date = row[csv_configs['CSV_END_DATE']] + '-' + row[4]
-            try:
-                row[csv_configs['CSV_START_DATE']] = datetime.strptime(
-                    start_date, '%Y/%m/%d-%H:%M:%S'
-                )
-                row[csv_configs['CSV_END_DATE']] = datetime.strptime(
-                    end_date, '%Y/%m/%d-%H:%M:%S'
-                )
-                i += 1
-            except ValueError:
-                convert.csv_data.pop(i)
-        convert.make_ical(csv_configs)
-        convert.save_ical(ical_file_location)
+        # convert.read_csv(csv_file_location, csv_configs)
+        # # i = 0
+        # # while i < len(convert.csv_data):
+        # #     row = convert.csv_data[i]
+        # #     start_date = row[csv_configs['CSV_START_DATE']]
+        # #     end_date = row[csv_configs['CSV_END_DATE']]
+        # #     try:
+        # #         row[csv_configs['CSV_START_DATE']] = datetime.strptime(
+        # #             start_date, '%Y/%m/%d-%H:%M:%S'
+        # #         )
+        # #         row[csv_configs['CSV_END_DATE']] = datetime.strptime(
+        # #             end_date, '%Y/%m/%d-%H:%M:%S'
+        # #         )
+        # #         i += 1
+        # #     except ValueError:
+        # #         convert.csv_data.pop(i)
+        # convert.make_ical(csv_configs)
+        # convert.save_ical(ical_file_location)
 
     def createCalendar(self, zid, deadlines):
         self.calCsv(zid, deadlines)
-        self.calIcal(zid)
+        self.calIcal(zid, deadlines)
 
 if __name__ == '__main__':
     test_string = 'Final exam1,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam2,2019-04-16T09:00:00,Worth 20%,UNSW=Final exam3,2019-04-17T09:00:00,Worth 20%,UNSW'

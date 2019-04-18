@@ -8,20 +8,7 @@ class Deadline(object):
         self.location       = location
 
     def toString(self):
-        def convertdate(isodate):
-            date, time = isodate.split('T')
-            date = date.replace('-', '/')
-            try:
-                time, seconds = time.split('.')
-            except:
-                pass
-            return date + ',' + time
-        return self.summary+','+convertdate(self.deadline)+','+convertdate(self.deadline)+','+self.description+','+self.location
-
-    def timeTo(self, now):
-        return datetime.strptime(self.deadline, '%Y-%m-%dT%H:%M:%S')-datetime.strptime(now, '%Y-%m-%dT%H:%M:%S')
-    def checkPassed(self, now):
-        return datetime.strptime(self.deadline, '%Y-%m-%dT%H:%M:%S')<datetime.strptime(now, '%Y-%m-%dT%H:%M:%S')
+        return self.summary+','+self.deadline.strftime('%d/%m/%Y')+','+self.description+','+self.location
 
 '''
 FORMAT
