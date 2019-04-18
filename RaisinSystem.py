@@ -55,6 +55,15 @@ class RaisinSystem():
     def get_due_dates(self, id, course):
         return self._user_system.get_due_dates(id, course)
 
+    def gcal(self, code, deadlines):
+        return self._deadline_system.gcal(code, deadlines)
+
+    def sendEmail(self, userID, recieverEmail):
+        return self._deadline_system.sendEmail(userID, recieverEmail)
+
+    def createCalendar(self, zid, deadlines):
+        self._deadline_system.createCalendar(zid, deadlines)
+
     # Get Deadline Object
     def get_deadlines(self, id):
         courses = self.get_courses(id)
@@ -66,7 +75,7 @@ class RaisinSystem():
                 if d.week == "Exam Period":
                     continue
                 due_date = term_start + timedelta(days=7*(int(d.week) - 1))
-                deadlines.append(Deadline(c.name + " - " + d.name, due_date, "Description", "UNSW"))
+                deadlines.append(Deadline(c.name + " - " + d.name, due_date, "Due this week", "UNSW"))
         return deadlines
 
     # rory's big parser

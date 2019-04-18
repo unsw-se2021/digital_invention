@@ -97,14 +97,15 @@ class DeadlineSystem(object):
                 count+=1
                 e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=eve).execute()
         return ('Added {} events to your Google Calendar!'.format(count))
+    
     def getEventObject(self, deadline):
-        GMT_OFF = '+11:00'
+        # GMT_OFF = '+11:00'
         EVENT = {
             'summary': deadline.summary,
             'location': deadline.location,
             'description': deadline.description,
             'start': { 'dateTime': deadline.deadline.isoformat(), 'timeZone': 'Australia/Sydney'},
-            'end': { 'dateTime': deadline.deadline.isoformat(),'timeZone': 'Australia/Sydney'}
+            'end': { 'dateTime': (deadline.deadline + timedelta(days=1)).isoformat(),'timeZone': 'Australia/Sydney'}
         }
         return EVENT
 

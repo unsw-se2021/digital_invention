@@ -6,10 +6,6 @@ class Deadline(object):
         self.deadline       = deadline #this must be in isoformat
         self.description    = worth
         self.location       = location
-
-    def toString(self):
-        return self.summary+','+self.deadline.strftime('%d/%m/%Y')+','+self.description+','+self.location
-
 '''
 FORMAT
         GMT_OFF = '+11:00'      # PDT/MST/GMT-7
