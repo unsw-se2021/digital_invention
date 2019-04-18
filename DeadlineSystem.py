@@ -29,7 +29,7 @@ class DeadlineSystem(object):
             server = smtplib.SMTP_SSL(SYSTEM_SERVER, 465)
             server.login(SYSTEM_EMAIL, SYSTEM_PASSWORD)
             subject = 'Deadline: Files'
-            body = 'Hi!\n\nThanks for using Raisin, and all the best for the term ahead.\n\nSincerely, Raisin Team'
+            body = 'Hi!\n\nAttached are .csv and .ics files, which can be imported into a calendar of your choice.\n\nThanks for using Raisin, and all the best for the term ahead.\n\nSincerely, Raisin Team'
 
             msg = MIMEMultipart()
             msg['From']="Raisin Team"
@@ -114,11 +114,11 @@ class DeadlineSystem(object):
         with open('calendars/' + zid + '.csv', 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
 
-            csvHeader = 'Subject,Date,Description,Location\n'
+            csvHeader = 'Subject,Start Date,End Date,All Day Event,Description,Location\n'
             csvFile.write(csvHeader)
 
             for d in deadlines:
-                csvFile.write(d.summary+','+d.deadline.strftime('%d/%m/%Y')+','+d.description+','+d.location+'\n')
+                csvFile.write(d.summary+','+d.deadline.strftime('%Y/%m/%d')+','+(d.deadline + timedelta(days=1)).strftime('%Y/%m/%d')+',Yes,'+d.description+','+d.location+'\n')
             csvFile.close()
 
 
@@ -129,7 +129,7 @@ class DeadlineSystem(object):
         for d in deadlines:
             e = Event()
             e.name = d.summary
-            e.begin = d.deadline.isoformat()
+            e.begin = d.deadline.strftime('%Y/%m/%d')
             e.location = d.location
             e.description = d.description
             c.events.add(e)

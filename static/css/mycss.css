@@ -20,6 +20,7 @@ container.loader {
 {
     border: 2px solid #2196f3;  
     background-color: #2196f3;
+    color: #000000 !important;
 }
 
 .input-field input[type=text]:focus + label {

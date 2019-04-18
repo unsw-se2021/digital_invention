@@ -40,15 +40,15 @@ def courses():
 @app.route('/events', methods=["GET", "POST"])
 @login_required
 def events():
-    try:
-        if request.method == "POST":
-            # write to necessary stuff
-            system.scrape_due_dates(current_user.id)
-            return redirect(url_for("duedates"))
+    # try:
+    if request.method == "POST":
+        # write to necessary stuff
+        system.scrape_due_dates(current_user.id)
+        return redirect(url_for("duedates"))
 
-        return render_template("events.html")
-    except:
-        return redirect(url_for("logout"))
+    return render_template("events.html")
+    # except:
+    #     return redirect(url_for("logout"))
 
 @app.route('/duedates', methods=["GET", "POST"])
 @login_required

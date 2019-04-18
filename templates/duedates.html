@@ -22,11 +22,15 @@
         {% for c in courses %}
         {% if c.selected %}
             <div class="col s12 l6">
-                <div class="card {{ ['red lighten-1','pink lighten-2','purple lighten-2','deep-purple lighten-2','indigo lighten-1','cyan','teal lighten-1','green lighten-1','light-green','orange','deep-orange lighten-1']|random() }}">
+                <div class="card {{c.color}}">
                     <div class="card-content white-text">
                         <span class="card-title">{{c.name}}:</span>
                         {% for a in c.due_dates %}
+                        {% if a.week == "Exam Period" %}
+                        <p>{{a.name}} - {{a.week}}</p>
+                        {% else %}
                         <p>{{a.name}} - Week {{a.week}}</p>
+                        {% endif %}
                         {% endfor %}
                     </div>
                 </div>
@@ -58,7 +62,7 @@
             <div class="col l6 s12">
                 <p>
                     <a href="/calendar.csv">
-                        <button class="btn waves-effect waves-light blue full_width">CSV</button>
+                        <button class="btn waves-effect waves-light blue full_width">CSV File</button>
                     </a>
                 </p>
             </div>
@@ -91,7 +95,7 @@
 
 <div id="modal2" class="modal">
     <form class="modal-content center" method="POST">
-        <p>Please enter your email address:</p>
+        <p>By entering your email below, you'll be sent CSV and ICS files which you can import into your calendar later.</p>
         <div class="input-field">
             <i class="material-icons prefix">account_box</i>
             <input id="eadd" type="text" name="eAdd">

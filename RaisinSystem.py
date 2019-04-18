@@ -167,9 +167,9 @@ class RaisinSystem():
             # search everywhere to see if there's X due
             x_due_search = re.findall("(?i)(([\w-]+) [0-9]+ due\\b)", whole_doc)
             for x in x_due_search:
-                if "((?i)(" + x[1] + " [0-9]+))" not in searches:
+                if "((?i)(?!.*(released|out))(" + x[1].lower() + " [0-9]+))" not in searches:
                     # print("adding " + x[1])
-                    searches.append("((?i)(" + x[1] + " [0-9]+))")
+                    searches.append("((?i)(?!.*(released|out))(" + x[1].lower() + " [0-9]+))")
 
             for line in merged:
                 if (not pdf_frame):
@@ -177,7 +177,7 @@ class RaisinSystem():
                 else:
                     line_formatted = line
 
-                week_search_1 = re.search("(?i)Week ([0-9]+)", line_formatted)
+                week_search_1 = re.search("(?i)week ([0-9]+)", line_formatted)
                 week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
 
                 for s in searches:

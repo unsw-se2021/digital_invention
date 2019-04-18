@@ -1,11 +1,13 @@
 # Course Class
 
 class Course():
+
     def __init__(self, name, url, selected):
         self._name = name
         self._url = url
         self._selected = selected
         self._due_dates = []
+        self._color = ['red lighten-1','pink lighten-2','purple lighten-2','deep-purple lighten-2','indigo lighten-1','cyan','teal lighten-1','green lighten-1','light-green','orange','deep-orange lighten-1'][int(name[-4:]) % 11]
 
     @property
     def name(self):
@@ -34,6 +36,10 @@ class Course():
     @due_dates.setter
     def due_dates(self, due_dates):
         self._due_dates = due_dates
+
+    @property
+    def color(self):
+        return self._color
 
 class DueDate():
     def __init__(self, name, week):
