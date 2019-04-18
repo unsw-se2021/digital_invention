@@ -40,34 +40,34 @@ def courses():
 @app.route('/events', methods=["GET", "POST"])
 @login_required
 def events():
-    #try:
-    if request.method == "POST":
-        # write to necessary stuff
-        system.scrape_due_dates(current_user.id)
-        return redirect(url_for("duedates"))
+    try:
+        if request.method == "POST":
+            # write to necessary stuff
+            system.scrape_due_dates(current_user.id)
+            return redirect(url_for("duedates"))
 
-    return render_template("events.html")
-    #except:
-        #return redirect(url_for("logout"))
+        return render_template("events.html")
+    except:
+        return redirect(url_for("logout"))
 
 @app.route('/duedates', methods=["GET", "POST"])
 @login_required
 def duedates():
-    # try:
-    courses = system.get_courses(current_user.id)
-    message = ""
-    if request.method == "POST":
-        d = system.get_deadlines(current_user.id)
-        if "submit_gID" in request.form:
-            message = system._deadline_system.gcal(request.form['gID'], d)
-        elif "submit_eAdd" in request.form:
-            message = system._deadline_system.sendEmail(current_user.id, request.form['eAdd'])
-    else:
-        system._deadline_system.createCalendar(current_user.id, system.get_deadlines(current_user.id))
-    return render_template('duedates.html', courses = courses, message = message)
+    try:
+        courses = system.get_courses(current_user.id)
+        message = ""
+        if request.method == "POST":
+            d = system.get_deadlines(current_user.id)
+            if "submit_gID" in request.form:
+                message = system._deadline_system.gcal(request.form['gID'], d)
+            elif "submit_eAdd" in request.form:
+                message = system._deadline_system.sendEmail(current_user.id, request.form['eAdd'])
+        else:
+            system._deadline_system.createCalendar(current_user.id, system.get_deadlines(current_user.id))
+        return render_template('duedates.html', courses = courses, message = message)
 
-    # except:
-    #      return redirect(url_for("logout"))
+    except:
+         return redirect(url_for("logout"))
 
 @app.route('/logout')
 @login_required

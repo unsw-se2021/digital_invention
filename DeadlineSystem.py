@@ -12,7 +12,6 @@ from email import encoders
 from Deadline import Deadline
 
 from datetime import datetime, timedelta
-# from csv_ical import Convert
 from ics import Calendar, Event
 import csv
 
@@ -61,9 +60,6 @@ class DeadlineSystem(object):
         except Exception as error:
             # return error
             return "Error occurred, please try again"
-
-
-
 
     def googleCalendar(self, deadlines):
         SCOPES = 'https://www.googleapis.com/auth/calendar'
@@ -114,14 +110,14 @@ class DeadlineSystem(object):
 
     # Convert to csv
     def calCsv(self, zid, deadlines):
-        with open('calendars/'+zid+'.csv', 'w') as csvFile:
+        with open('calendars/' + zid + '.csv', 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
 
             csvHeader = 'Subject,Date,Description,Location\n'
             csvFile.write(csvHeader)
 
-            for deadline in deadlines:
-                csvFile.write(deadline.toString()+'\n')
+            for d in deadlines:
+                csvFile.write(d.summary+','+d.deadline.strftime('%d/%m/%Y')+','+d.description+','+d.location+'\n')
             csvFile.close()
 
 
@@ -138,36 +134,6 @@ class DeadlineSystem(object):
             c.events.add(e)
         with open('calendars/' + zid + '.ics', 'w') as f:
             f.writelines(c)
-        # convert = Convert()
-        # csv_file_location = 'calendars/'+zid+'.csv'
-        # ical_file_location = 'calendars/'+zid+'.ics'
-        # csv_configs = {
-        #     'HEADER_COLUMNS_TO_SKIP': 1,
-        #     'CSV_NAME': 0,
-        #     'CSV_START_DATE': 1,
-        #     'CSV_END_DATE': 1,
-        #     'CSV_DESCRIPTION': 2,
-        #     'CSV_LOCATION': 3,
-        # }
-
-        # convert.read_csv(csv_file_location, csv_configs)
-        # # i = 0
-        # # while i < len(convert.csv_data):
-        # #     row = convert.csv_data[i]
-        # #     start_date = row[csv_configs['CSV_START_DATE']]
-        # #     end_date = row[csv_configs['CSV_END_DATE']]
-        # #     try:
-        # #         row[csv_configs['CSV_START_DATE']] = datetime.strptime(
-        # #             start_date, '%Y/%m/%d-%H:%M:%S'
-        # #         )
-        # #         row[csv_configs['CSV_END_DATE']] = datetime.strptime(
-        # #             end_date, '%Y/%m/%d-%H:%M:%S'
-        # #         )
-        # #         i += 1
-        # #     except ValueError:
-        # #         convert.csv_data.pop(i)
-        # convert.make_ical(csv_configs)
-        # convert.save_ical(ical_file_location)
 
     def createCalendar(self, zid, deadlines):
         self.calCsv(zid, deadlines)
