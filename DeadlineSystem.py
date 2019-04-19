@@ -164,10 +164,7 @@ if __name__ == '__main__':
     for t in tt:
         t = (t.split(','))
         d.append(Deadline(t[0], t[1], t[2], t[3]))
-    #d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
-    ##deadlines = []
-    #deadlines.append(d1)#d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
-    #d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
+
     deadlineSystem = DeadlineSystem()
     deadlineSystem.createCalender('z5170340', d)
 
@@ -175,9 +172,3 @@ if __name__ == '__main__':
     flow = deadlineSystem.gflow()
     code = input(flow.step1_get_authorize_url()+'\nCODE:')
     print(deadlineSystem.gcal(flow, code, d))
-
-    #deadlineSystem.getEventObject(d[0])
-
-    #print(deadlineSystem.gcal('4/LAEgftMm8k4Em6AEM36266NPsEnnfYhZq77hNtJImT6B5ZtjSOjkX7w', d))
-    #deadlineSystem.googleCalender('z5170340')
-    #print(deadlineSystem.sendEmail('z5170340', "email@example.com"))

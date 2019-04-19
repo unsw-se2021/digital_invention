@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup as soup
 import re
 import lxml
 from urllib.error import HTTPError, URLError
+import datetime
 import requests
 
 BASE_URL        = "https://webcms3.cse.unsw.edu.au"
@@ -113,14 +114,14 @@ def searchLinks(searchTerm, searchLink):
             found = genLink(refUrl, link['href'])
             if BASE_URL_2 in refUrl and Urlopen(found) == None:
                 found = genLink(BASE_URL, link['href'])
-            print(found)
-            for l in links:
-                if found == l:
-                    pass
-                else:
-                    links.append(found)
-            newLinks = searchLinks(searchTerm, found)
-            print(newLinks)
+            links.append(found)
+            #for l in links:
+                #if found == l:
+                    #pass
+                #else:
+                    #links.append(found)
+            #newLinks = searchLinks(searchTerm, found)
+            #print(newLinks)
 
     return links
 
@@ -139,6 +140,6 @@ if __name__ == "__main__":
     courseCode = input("enter course code e.g. 1511: ")
     searchTerm = input("enter search term e.g. outline: ")
     courseLink = generateCourseLink(courseCode)
-
+    print(courseLink)
     #courseLink = 'https://cgi.cse.unsw.edu.au/~cs1511/COMP1511/19T1/resources/23728/'
     print(searchLinks(searchTerm, courseLink))
