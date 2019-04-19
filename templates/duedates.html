@@ -25,8 +25,14 @@
                 <div class="card {{c.color}}">
                     <div class="card-content white-text">
                         <span class="card-title">{{c.name}}:</span>
+                        {% if not c.due_dates %}
+                        <p>No due dates found</p>
+                        {% endif %}
+                        {% if c.has_labs %}
+                        <p>Weekly labs</p>
+                        {% endif %}
                         {% for a in c.due_dates %}
-                        {% if a.week == "Exam Period" %}
+                        {% if a.week == "Exam period" %}
                         <p>{{a.name}} - {{a.week}}</p>
                         {% else %}
                         <p>{{a.name}} - Week {{a.week}}</p>
@@ -49,7 +55,7 @@
         <div class="row">
             <div class="col l6 s12">
                 <p>
-                    <button onclick="activateGcal()" class="btn waves-effect waves-light blue full_width">Google Calender</button>
+                    <button onclick="activateGcal()" class="btn waves-effect waves-light blue full_width">Google Calendar</button>
                 </p>
             </div>
             <div class="col l6 s12">

@@ -8,32 +8,40 @@ def load_user(id):
 
 @app.route("/", methods=["GET", "POST"])
 def login():
-    error = False
+    error = ""
     if request.method == "POST":
         id = request.form["zid"]
         password = request.form["password"]
         if system.authenticate_user(id, password):
-            system.populate_courses(current_user.id)
-            return redirect(url_for("courses"))
+            num_courses = system.populate_courses(current_user.id)
+            if num_courses > 0:
+                return redirect(url_for("courses"))
+            else:
+                error = "Sorry, no WebCMS3 courses were found"
         else:
-            error = True
+            error = "Incorrect zID or password, please try again"
     return render_template("login.html", error = error)
 
 @app.route("/courses", methods=["GET", "POST"])
 @login_required
 def courses():
     try:
+        num_selected = 0
+        error = ""
         courses = system.get_courses(current_user.id)
         if request.method == "POST":
             for c in courses:
                 if request.form.get(c.name):
                     c.selected = True
+                    num_selected += 1
                 else:
                     c.selected = False
+            if num_selected > 0:
+                return redirect(url_for("events"))
+            else:
+                error = "You must select at least one course"
 
-            return redirect(url_for("events"))
-
-        return render_template("courses.html", courses = courses)
+        return render_template("courses.html", courses = courses, error = error)
     except:
         return redirect(url_for("logout"))
 

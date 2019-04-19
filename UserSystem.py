@@ -14,26 +14,37 @@ class UserSystem():
     def __init__(self):
         self._users = {}
 
-    def add_user(self, id):
-        new_user = User(id)
+    def add_user(self, id, dummy):
+        new_user = User(id, dummy)
         self._users[id] = new_user
 
     def authenticate_user(self, id, password):
         session = requests.session()
         result = session.get(LOGIN_URL)
         doc = html.fromstring(result.text)
-        authenticity_token = list(set(doc.xpath("//input[@name='csrf_token']/@value")))[0] # change
+        authenticity_token = list(set(doc.xpath("//input[@name='csrf_token']/@value")))[0]
         payload = {"zid": id, "password": password, "csrf_token": authenticity_token}
         result = session.post(LOGIN_URL, data = payload, headers = dict(referer = LOGIN_URL))
         for r in result.history:
             if LOGIN_URL == (r.url):
                 if id not in self._users:
-                    self.add_user(id)
+                    self.add_user(id, False)
                 user = self._users[id]
                 login_user(user)
                 user.session = session
                 return True
+        if id == "z1111111" or id == "z3333333":
+            # our dummy users
+            if id not in self._users:
+                self.add_user(id, True)
+            user = self._users[id]
+            login_user(user)
+            user.session = session
+            return True
         return False
+
+    def is_dummy(self, id):
+        return self._users[id].dummy
 
     def get_user(self, id):
         if id in self._users:
@@ -44,8 +55,11 @@ class UserSystem():
     def log_out_user(self, id):
         self.navigateTo(id, LOGOUT_URL)
         try:
-            os.remove("calendars/" + id + ".ics")
             os.remove("calendars/" + id + ".csv")
+        except OSError:
+            pass
+        try:
+            os.remove("calendars/" + id + ".ics")
         except OSError:
             pass
         logout_user()
@@ -75,6 +89,11 @@ class UserSystem():
                         return
                 c.due_dates.append(due_date)
                 break
+
+    def has_labs(self, id, course):
+        for c in self._users[id].courses:
+            if c.name == course:
+                c.has_labs = True
 
     def get_due_dates(self, id, course):
         for c in self._users[id].courses:

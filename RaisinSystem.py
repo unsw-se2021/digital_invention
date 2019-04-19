@@ -34,12 +34,29 @@ class RaisinSystem():
         self._user_system.add_courses(id, courses)
 
     def populate_courses(self, id):
-        doc = self.navigateTo(id, DASHBOARD_URL)
         courses = []
-        nav = doc.xpath('.//ul[@class="nav navbar-nav"]')[0]
-        for item in nav:
-            courses.append(Course(item.text_content(), BASE_URL + item[0].get("href"), False))
-        self.add_courses(id, courses)
+        num_courses = 0
+        if self._user_system.is_dummy(id):
+            # populating dummy users with courses
+            if id == "z1111111":
+                courses.append(Course("COMP1511", BASE_URL + "/COMP1511/19T1/"))
+                courses.append(Course("COMP2521", BASE_URL + "/COMP2521/19T1/"))
+                courses.append(Course("COMP1911", BASE_URL + "/COMP1911/19T1/"))
+                self.add_courses(id, courses)
+                return 3
+            elif id == "z3333333":
+                courses.append(Course("COMP2121", BASE_URL + "/COMP2121/19T1/"))
+                courses.append(Course("COMP3311", BASE_URL + "/COMP3311/19T1/"))
+                self.add_courses(id, courses)
+                return 2
+        else:
+            doc = self.navigateTo(id, DASHBOARD_URL)
+            nav = doc.xpath('.//ul[@class="nav navbar-nav"]')[0]
+            for item in nav:
+                num_courses += 1
+                courses.append(Course(item.text_content(), BASE_URL + item[0].get("href")))
+            self.add_courses(id, courses)
+            return num_courses
 
     def get_courses(self, id):
         return self._user_system.get_courses(id)
@@ -53,6 +70,9 @@ class RaisinSystem():
     def add_due_date(self, id, course, due_date):
         self._user_system.add_due_date(id, course, due_date)
 
+    def has_labs(self, id, course):
+        self._user_system.has_labs(id, course)
+
     def get_due_dates(self, id, course):
         return self._user_system.get_due_dates(id, course)
 
@@ -65,7 +85,6 @@ class RaisinSystem():
     def createCalendar(self, zid, deadlines):
         self._deadline_system.createCalendar(zid, deadlines)
 
-    # Get Deadline Object
     def get_deadlines(self, id):
         courses = self.get_courses(id)
         deadlines = []
@@ -74,7 +93,7 @@ class RaisinSystem():
         exam_start = datetime.strptime("2/5/2019", "%d/%m/%Y")
         for c in courses:
             for d in c.due_dates:
-                if d.week == "Exam Period":
+                if d.week == "Exam period":
                     due_date = exam_start
                     deadlines.append(Deadline(c.name + " - " + d.name, due_date, "During exam period", "UNSW"))
                 else:
@@ -112,9 +131,8 @@ class RaisinSystem():
     # rory's big parser
     def scrape_due_dates(self, id):
         for c in self.get_courses(id):
-            # if not c.selected:
-            #     continue
-            # print("Due dates for " + c.name + ":")
+            if not c.selected:
+                continue
             # get course outline
             curr_course_url = c.url
             doc = self.navigateTo(id, curr_course_url)
@@ -152,19 +170,17 @@ class RaisinSystem():
                 os.remove("tempfiles/" + id + "_" + c.name + "_outline.csv")
 
             if (not pdf_frame):
-                # bullet_point = doc.xpath('.//li')
+                bullet_point = doc.xpath('.//li')
                 table_row = doc.xpath('.//tr')
-                # merged = bullet_point + table_row
-                merged = table_row
+                merged = bullet_point + table_row
                 whole_doc = doc.text_content()
 
-            # parse course outline html for assignment dates
-            # assignment = {}
-
-            # searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)((del|deliverable) [0-9]+))", "((?i)([\w-]+ exam\\b))"]
+            # our list of searches, which we'll be adding to
+            # change depending on criteria selected?
             searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)([\w-]+ exam\\b))"]
 
             # search everywhere to see if there's X due
+            # only if project milestones is selected?
             x_due_search = re.findall("(?i)(([\w-]+) [0-9]+ due\\b)", whole_doc)
             for x in x_due_search:
                 if "((?i)(?!.*(released|out))(" + x[1].lower() + " [0-9]+))" not in searches:
@@ -177,25 +193,31 @@ class RaisinSystem():
                 else:
                     line_formatted = line
 
-                week_search_1 = re.search("(?i)week ([0-9]+)", line_formatted)
-                week_search_2 = re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted)
+                week_search = []
+                week_search.append(re.search("(?i)week ([0-9]+)", line_formatted))
+                week_search.append(re.search("(?i)^([0-9]+)(st|nd|th)*\\b", line_formatted))
 
                 for s in searches:
-                    # search for references to assignments
+                    # search for references to above terms
                     date_search = re.findall(s, line_formatted)
                     for d in date_search:
                         # search for a reference to a week in the same line
-                        if (week_search_1):
-                            # self.add_due_date(id, c.name, DueDate(d[0], "Week " + week_search_1.group(1)))
-                            self.add_due_date(id, c.name, DueDate(d[0], week_search_1.group(1)))
-                            # assignment[d[0]] = week_search_1.group(1)
-                        elif (week_search_2):
-                            # self.add_due_date(id, c.name, DueDate(d[0], "Week " + week_search_2.group(1)))
-                            self.add_due_date(id, c.name, DueDate(d[0], week_search_2.group(1)))
-                            # assignment[d[0]] = week_search_2.group(1)
+                        for w in week_search:
+                            if (w):
+                                if (int(w.group(1)) < 12):
+                                    self.add_due_date(id, c.name, DueDate(d[0].capitalize(), w.group(1)))
+                                    break
 
             # search everywhere to see if there's a final exam
-            final_exam_search_1 = re.search("(?i)Exam Period", whole_doc)
-            final_exam_search_2 = re.search("(?i)Final Exam\\b", whole_doc)
+            # only if exams selected?
+            final_exam_search_1 = re.search("(?i)exam period", whole_doc)
+            final_exam_search_2 = re.search("(?i)final exam\\b", whole_doc)
             if (final_exam_search_1 or final_exam_search_2):
-                self.add_due_date(id, c.name, DueDate("Final Exam", "Exam Period"))
+                self.add_due_date(id, c.name, DueDate("Final exam", "Exam period"))
+
+            # search everywhere to see if there are labs
+            # only if labs selected?
+            lab_search_1 = re.search("(?i)\\blab\\b", whole_doc)
+            lab_search_2 = re.search("(?i)laborator(y|ies)", whole_doc)
+            if (lab_search_1 or lab_search_2):
+                self.has_labs(id, c.name)

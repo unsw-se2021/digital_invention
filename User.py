@@ -2,10 +2,11 @@
 from flask_login import UserMixin
 
 class User(UserMixin):
-    def __init__(self, id):
+    def __init__(self, id, dummy):
         self._id = id
         self._courses = []
         self._session = None
+        self._dummy = dummy
 
     @property
     def id(self):
@@ -27,3 +28,7 @@ class User(UserMixin):
     @session.setter
     def session(self, session):
         self._session = session
+
+    @property
+    def dummy(self):
+        return self._dummy

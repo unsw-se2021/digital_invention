@@ -99,7 +99,6 @@ class DeadlineSystem(object):
         return ('Added {} events to your Google Calendar!'.format(count))
     
     def getEventObject(self, deadline):
-        # GMT_OFF = '+11:00'
         EVENT = {
             'summary': deadline.summary,
             'location': deadline.location,
@@ -109,7 +108,7 @@ class DeadlineSystem(object):
         }
         return EVENT
 
-    # Convert to csv
+    # csv creator
     def calCsv(self, zid, deadlines):
         with open('calendars/' + zid + '.csv', 'w') as csvFile:
             csvWriter = csv.writer(csvFile)
@@ -121,9 +120,7 @@ class DeadlineSystem(object):
                 csvFile.write(d.summary+','+d.deadline.strftime('%Y/%m/%d')+','+(d.deadline + timedelta(days=1)).strftime('%Y/%m/%d')+',Yes,'+d.description+','+d.location+'\n')
             csvFile.close()
 
-
-    # Convert to iCal
-
+    # ics (iCal) creator
     def calIcal(self, zid, deadlines):
         c = Calendar()
         for d in deadlines:
@@ -136,31 +133,7 @@ class DeadlineSystem(object):
         with open('calendars/' + zid + '.ics', 'w') as f:
             f.writelines(c)
 
+    # create csv and ics files
     def createCalendar(self, zid, deadlines):
         self.calCsv(zid, deadlines)
         self.calIcal(zid, deadlines)
-
-if __name__ == '__main__':
-    test_string = 'Final exam1,2019-04-14T09:00:00,Worth 20%,UNSW=Final exam2,2019-04-16T09:00:00,Worth 20%,UNSW=Final exam3,2019-04-17T09:00:00,Worth 20%,UNSW'
-    tt = test_string.split('=')
-    d = []
-    for t in tt:
-        t = (t.split(','))
-        d.append(Deadline(t[0], t[1], t[2], t[3]))
-    #d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
-    ##deadlines = []
-    #deadlines.append(d1)#d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
-    #d1 = Deadline('Final exam1', '2019-04-04T09:00:00','Worth 20%','UNSW')
-    deadlineSystem = DeadlineSystem()
-    deadlineSystem.createCalendar('z5170340', d)
-
-
-    flow = deadlineSystem.gflow()
-    code = input(flow.step1_get_authorize_url()+'\nCODE:')
-    print(deadlineSystem.gcal(flow, code, d))
-
-    #deadlineSystem.getEventObject(d[0])
-
-    #print(deadlineSystem.gcal('4/LAEgftMm8k4Em6AEM36266NPsEnnfYhZq77hNtJImT6B5ZtjSOjkX7w', d))
-    #deadlineSystem.googleCalendar('z5170340')
-#print(deadlineSystem.sendEmail('z5170340', "email@example.com"))
