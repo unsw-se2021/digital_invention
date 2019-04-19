@@ -79,7 +79,7 @@ class RaisinSystem():
                     deadlines.append(Deadline(c.name + " - " + d.name, due_date, "During exam period", "UNSW"))
                 else:
                     due_date = term_start + timedelta(days=7*(int(d.week) - 1))
-                    deadlines.append(Deadline(c.name + " - " + d.name, due_date, "Due in this week", "UNSW"))
+                    deadlines.append(Deadline(c.name + " - " + d.name, due_date, "Due this week", "UNSW"))
         return deadlines
 
     # def get_dates(self):

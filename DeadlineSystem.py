@@ -28,7 +28,7 @@ class DeadlineSystem(object):
         try:
             server = smtplib.SMTP_SSL(SYSTEM_SERVER, 465)
             server.login(SYSTEM_EMAIL, SYSTEM_PASSWORD)
-            subject = 'Deadline: Files'
+            subject = 'Raisin: Your calendar files are available'
             body = 'Hi!\n\nAttached are .csv and .ics files, which can be imported into a calendar of your choice.\n\nThanks for using Raisin, and all the best for the term ahead.\n\nSincerely, Raisin Team'
 
             msg = MIMEMultipart()
