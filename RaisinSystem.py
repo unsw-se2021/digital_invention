@@ -70,6 +70,9 @@ class RaisinSystem():
     def add_due_date(self, id, course, due_date):
         self._user_system.add_due_date(id, course, due_date)
 
+    def clear_due_dates(self, id):
+        self._user_system.clear_due_dates(id)
+
     def has_labs(self, id, course):
         self._user_system.has_labs(id, course)
 
@@ -129,7 +132,8 @@ class RaisinSystem():
     #             return (start_week_date, exam_week_date) 
 
     # rory's big parser
-    def scrape_due_dates(self, id):
+    def scrape_due_dates(self, id, find_assignments, find_exams, find_milestones, find_labs):
+        self.clear_due_dates(id)
         for c in self.get_courses(id):
             if not c.selected:
                 continue
@@ -177,15 +181,25 @@ class RaisinSystem():
 
             # our list of searches, which we'll be adding to
             # change depending on criteria selected?
-            searches = ["((?i)(?!.*(released|out))(assignment [0-9]+))", "((?i)([\w-]+ exam\\b))"]
+            searches = []
+            if find_assignments:
+                searches.append("((?i)(?!.*(released|out))(assignment [0-9]+))")
+            if find_exams:
+                searches.append("((?i)([\w-]+ exam\\b))")
+
+            # how many assignments are referenced?
+            # test_assignment = re.findall("((?i)(?!.*(released|out))(assignment [0-9]+))", whole_doc)
+            # highest_index = 0
+            # for t in test_assignment:
 
             # search everywhere to see if there's X due
             # only if project milestones is selected?
-            x_due_search = re.findall("(?i)(([\w-]+) [0-9]+ due\\b)", whole_doc)
-            for x in x_due_search:
-                if "((?i)(?!.*(released|out))(" + x[1].lower() + " [0-9]+))" not in searches:
-                    # print("adding " + x[1])
-                    searches.append("((?i)(?!.*(released|out))(" + x[1].lower() + " [0-9]+))")
+            if find_milestones:
+                x_due_search = re.findall("(?i)(([\w-]+) [0-9]+ due\\b)", whole_doc)
+                for x in x_due_search:
+                    if not x[1].lower() == "assignment" and "((?i)(?!.*(released|out))(" + x[1].lower() + " [0-9]+))" not in searches:
+                        # print("adding " + x[1])
+                        searches.append("((?i)(?!.*(released|out))(" + x[1].lower() + " [0-9]+))")
 
             for line in merged:
                 if (not pdf_frame):
@@ -207,17 +221,21 @@ class RaisinSystem():
                                 if (int(w.group(1)) < 12):
                                     self.add_due_date(id, c.name, DueDate(d[0].capitalize(), w.group(1)))
                                     break
+                        print(c.name + " " + d[0])
+                        # add to the estimator(tm)
 
             # search everywhere to see if there's a final exam
             # only if exams selected?
-            final_exam_search_1 = re.search("(?i)exam period", whole_doc)
-            final_exam_search_2 = re.search("(?i)final exam\\b", whole_doc)
-            if (final_exam_search_1 or final_exam_search_2):
-                self.add_due_date(id, c.name, DueDate("Final exam", "Exam period"))
+            if find_exams:
+                final_exam_search_1 = re.search("(?i)exam period", whole_doc)
+                final_exam_search_2 = re.search("(?i)final exam\\b", whole_doc)
+                if (final_exam_search_1 or final_exam_search_2):
+                    self.add_due_date(id, c.name, DueDate("Final exam", "Exam period"))
 
             # search everywhere to see if there are labs
             # only if labs selected?
-            lab_search_1 = re.search("(?i)\\blab\\b", whole_doc)
-            lab_search_2 = re.search("(?i)laborator(y|ies)", whole_doc)
-            if (lab_search_1 or lab_search_2):
-                self.has_labs(id, c.name)
+            if find_labs:
+                lab_search_1 = re.search("(?i)\\blab\\b", whole_doc)
+                lab_search_2 = re.search("(?i)laborator(y|ies)", whole_doc)
+                if (lab_search_1 or lab_search_2):
+                    self.has_labs(id, c.name)

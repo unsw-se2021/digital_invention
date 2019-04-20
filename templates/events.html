@@ -74,4 +74,8 @@
     </div>
 </container>
 <script type="text/javascript" src="{{ url_for('static', filename='js/loader.js') }}"></script>
+
+{% if error %}
+<script>M.toast({html: '{{error}}'})</script>
+{% endif %}
 {% endblock %}

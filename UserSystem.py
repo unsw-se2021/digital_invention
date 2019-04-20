@@ -90,6 +90,10 @@ class UserSystem():
                 c.due_dates.append(due_date)
                 break
 
+    def clear_due_dates(self, id):
+        for c in self._users[id].courses:
+            c.due_dates = []
+
     def has_labs(self, id, course):
         for c in self._users[id].courses:
             if c.name == course:

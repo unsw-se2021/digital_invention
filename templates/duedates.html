@@ -81,10 +81,6 @@
     </div>
 </div>
 
-{% if message %}
-<script>M.toast({html: '{{message}}'})</script>
-{% endif %}
-
 <div id="modal1" class="modal">
     <form class="modal-content center" method="POST">
         <p>Please enter your Google verification code:</p>
@@ -115,5 +111,7 @@
 
 <script type="text/javascript" src="{{ url_for('static', filename='js/dueDateFuncs.js') }}"></script>
 
-
+{% if message %}
+<script>M.toast({html: '{{message}}'})</script>
+{% endif %}
 {% endblock content %}
