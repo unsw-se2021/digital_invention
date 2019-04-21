@@ -80,6 +80,7 @@ class UserSystem():
     def get_courses(self, id):
         return self._users[id].courses
 
+    # add due date into the list, sorted (badly)
     def add_due_date(self, id, course, due_date):
         for c in self._users[id].courses:
             if c.name == course:
@@ -87,8 +88,26 @@ class UserSystem():
                     if c.due_dates[a].name == due_date.name:
                         c.due_dates[a] = due_date
                         return
+                if due_date.week == "Exam period" or c.due_dates == []:
+                    c.due_dates.append(due_date)
+                    return
+                for a in range (len(c.due_dates)):
+                    if c.due_dates[a].week == "Exam period":
+                        c.due_dates.insert(a, due_date)
+                        return
+                    elif int(c.due_dates[a].week) > int(due_date.week):
+                        c.due_dates.insert(a, due_date)
+                        return
                 c.due_dates.append(due_date)
                 break
+
+    def is_due_date(self, id, course, task_name):
+        for c in self._users[id].courses:
+            if c.name == course:
+                for d in c.due_dates:
+                    if d.name == task_name:
+                        return True
+        return False
 
     def clear_due_dates(self, id):
         for c in self._users[id].courses:

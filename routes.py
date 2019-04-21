@@ -46,34 +46,34 @@ def courses():
 @app.route('/events', methods=["GET", "POST"])
 @login_required
 def events():
-    try:
-        error = ""
-        if request.method == "POST":
-            any_selected = False
-            find_assignments = False
-            find_exams = False
-            find_milestones = False
-            find_labs = False
-            if request.form.get("assignments"):
-                find_assignments = True
-                any_selected = True
-            if request.form.get("exams"):
-                find_exams = True
-                any_selected = True
-            if request.form.get("milestones"):
-                find_milestones = True
-                any_selected = True
-            if request.form.get("labs"):
-                find_labs = True
-                any_selected = True
-            if any_selected:
-                system.scrape_due_dates(current_user.id, find_assignments, find_exams, find_milestones, find_labs)
-                return redirect(url_for("duedates"))
-            else:
-                error = "You must select at least one event"
-        return render_template("events.html", error = error)
-    except:
-        return redirect(url_for("logout"))
+    # try:
+    error = ""
+    if request.method == "POST":
+        any_selected = False
+        find_assignments = False
+        find_exams = False
+        find_milestones = False
+        find_labs = False
+        if request.form.get("assignments"):
+            find_assignments = True
+            any_selected = True
+        if request.form.get("exams"):
+            find_exams = True
+            any_selected = True
+        if request.form.get("milestones"):
+            find_milestones = True
+            any_selected = True
+        if request.form.get("labs"):
+            find_labs = True
+            any_selected = True
+        if any_selected:
+            system.scrape_due_dates(current_user.id, find_assignments, find_exams, find_milestones, find_labs)
+            return redirect(url_for("duedates"))
+        else:
+            error = "You must select at least one event"
+    return render_template("events.html", error = error)
+    # except:
+    #     return redirect(url_for("logout"))
 
 @app.route('/duedates', methods=["GET", "POST"])
 @login_required
