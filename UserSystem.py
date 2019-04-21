@@ -1,4 +1,3 @@
-# User System Class
 from flask import request, render_template, url_for, redirect
 from flask_login import UserMixin, login_manager, login_required, login_user, current_user, logout_user
 import requests
@@ -10,6 +9,7 @@ BASE_URL = "https://webcms3.cse.unsw.edu.au"
 LOGIN_URL = BASE_URL + "/login"
 LOGOUT_URL = BASE_URL + "/logout"
 
+# User system - handles authentication and user functions
 class UserSystem():
     def __init__(self):
         self._users = {}
@@ -79,31 +79,6 @@ class UserSystem():
 
     def get_courses(self, id):
         return self._users[id].courses
-
-    # add due date into the list, sorted (badly)
-    # def add_due_date(self, id, course, due_date):
-    #     for c in self._users[id].courses:
-    #         if c.name == course:
-    #             for a in range (len(c.due_dates)):
-    #                 if c.due_dates[a].name == due_date.name:
-    #                     if c.due_dates[a].week == due_date.week:
-    #                         return
-    #                     else:
-    #                         c.due_dates.remove(c.due_dates[a])
-    #                     # c.due_dates[a] = due_date
-    #                     # return
-    #             if due_date.week == "Exam period" or c.due_dates == []:
-    #                 c.due_dates.append(due_date)
-    #                 return
-    #             for a in range (len(c.due_dates)):
-    #                 if c.due_dates[a].week == "Exam period":
-    #                     c.due_dates.insert(a, due_date)
-    #                     return
-    #                 elif int(c.due_dates[a].week) > int(due_date.week):
-    #                     c.due_dates.insert(a, due_date)
-    #                     return
-    #             c.due_dates.append(due_date)
-    #             break
 
     # add due date unsorted
     def add_due_date(self, id, course, due_date):

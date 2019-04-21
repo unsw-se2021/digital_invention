@@ -1,7 +1,5 @@
-# Course Class
-
+# Course objects - contain all data of a user's course
 class Course():
-
     def __init__(self, name, url):
         self._name = name
         self._url = url
@@ -49,6 +47,7 @@ class Course():
     def color(self):
         return self._color
 
+# Due date objects - contain information about each due date
 class DueDate():
     def __init__(self, name, week):
         self._name = name

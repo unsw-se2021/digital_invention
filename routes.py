@@ -2,6 +2,8 @@ from server import app, system, login_manager
 from flask import Flask, render_template, request, url_for, redirect, send_file
 from flask_login import UserMixin, login_user, login_required, current_user, logout_user
 
+# Handle all website I/O and route to our main Raisin system
+
 @login_manager.user_loader
 def load_user(id):
     return system.get_user(id)
@@ -46,53 +48,52 @@ def courses():
 @app.route('/events', methods=["GET", "POST"])
 @login_required
 def events():
-    # try:
-    error = ""
-    if request.method == "POST":
-        any_selected = False
-        find_assignments = False
-        find_exams = False
-        find_milestones = False
-        find_labs = False
-        if request.form.get("assignments"):
-            find_assignments = True
-            any_selected = True
-        if request.form.get("exams"):
-            find_exams = True
-            any_selected = True
-        if request.form.get("milestones"):
-            find_milestones = True
-            any_selected = True
-        if request.form.get("labs"):
-            find_labs = True
-            any_selected = True
-        if any_selected:
-            system.scrape_due_dates(current_user.id, find_assignments, find_exams, find_milestones, find_labs)
-            return redirect(url_for("duedates"))
-        else:
-            error = "You must select at least one event"
-    return render_template("events.html", error = error)
-    # except:
-    #     return redirect(url_for("logout"))
+    try:
+        error = ""
+        if request.method == "POST":
+            any_selected = False
+            find_assignments = False
+            find_exams = False
+            find_milestones = False
+            find_labs = False
+            if request.form.get("assignments"):
+                find_assignments = True
+                any_selected = True
+            if request.form.get("exams"):
+                find_exams = True
+                any_selected = True
+            if request.form.get("milestones"):
+                find_milestones = True
+                any_selected = True
+            if request.form.get("labs"):
+                find_labs = True
+                any_selected = True
+            if any_selected:
+                system.scrape_due_dates(current_user.id, find_assignments, find_exams, find_milestones, find_labs)
+                return redirect(url_for("duedates"))
+            else:
+                error = "You must select at least one event"
+        return render_template("events.html", error = error)
+    except:
+        return redirect(url_for("logout"))
 
 @app.route('/duedates', methods=["GET", "POST"])
 @login_required
 def duedates():
-    # try:
-    courses = system.get_courses(current_user.id)
-    d = system.get_deadlines(current_user.id)
-    message = ""
-    if request.method == "POST":
-        if "submit_gID" in request.form:
-            message = system.gcal(request.form['gID'], d)
-        elif "submit_eAdd" in request.form:
-            message = system.sendEmail(current_user.id, request.form['eAdd'])
-    else:
-        system.createCalendar(current_user.id, d)
-    return render_template('duedates.html', courses = courses, message = message)
-
-    # except:
-    #      return redirect(url_for("logout"))
+    try:
+        courses = system.get_courses(current_user.id)
+        d = system.get_deadlines(current_user.id)
+        message = ""
+        if request.method == "POST":
+            if "submit_gID" in request.form:
+                message = system.gcal(request.form['gID'], d)
+            elif "submit_eAdd" in request.form:
+                message = system.sendEmail(current_user.id, request.form['eAdd'])
+        else:
+            system.createCalendar(current_user.id, d)
+        return render_template('duedates.html', courses = courses, message = message)
+    except:
+         return redirect(url_for("logout"))
 
 @app.route('/logout')
 @login_required

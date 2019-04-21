@@ -1,4 +1,3 @@
-# Deadline System Class
 from __future__ import print_function
 from apiclient import discovery
 from httplib2 import Http
@@ -19,10 +18,10 @@ SYSTEM_EMAIL    = 'systemraisin@gmail.com'
 SYSTEM_PASSWORD = 'digital.Invention2019'
 SYSTEM_SERVER   = 'smtp.gmail.com'
 
-class DeadlineSystem(object):
+# Deadline system - handles due date exporting
+class DeadlineSystem():
     def __init__(self):
         self.deadlines = []
-        self.time_now  = datetime.now().isoformat().partition('.')[0]
 
     def sendEmail(self, userID, recieverEmail):
         try:

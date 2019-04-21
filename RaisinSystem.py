@@ -14,6 +14,7 @@ BASE_URL = "https://webcms3.cse.unsw.edu.au"
 DASHBOARD_URL = BASE_URL + "/dashboard"
 CALENDAR_URL = "https://student.unsw.edu.au/calendar"
 
+# Raisin System - handles central processing
 class RaisinSystem():
     def __init__(self):
         self._user_system = UserSystem()
@@ -102,33 +103,6 @@ class RaisinSystem():
                     due_date = term_start + timedelta(days=7*(int(d.week) - 1))
                     deadlines.append(Deadline(c.name + " - " + d.name, due_date, "Due this week", "UNSW"))
         return deadlines
-
-    # def get_dates(self):
-    #     # separate session from webcms
-    #     session = requests.session()
-    #     result = session.get(CALENDAR_URL, headers = dict(referer = CALENDAR_URL))
-    #     doc = html.fromstring(result.content)
-
-    #     for t in range(1,4):
-    #         print(str(t))
-    #         start_week = False
-    #         exam_week = False
-    #         all_tables = doc.xpath(".//tr")
-    #         for table in all_tables:
-    #             table = table.text_content()
-    #             print(table)
-    #             if not start_week:
-    #                 start_week = re.search("(?i)Teaching period T" + str(t) + "([0-9]+ (jan|feb|mar|apr|may|june|july|aug|sep|oct|nov|dec))", table)
-    #             if not exam_week:
-    #                 exam_week = re.search("(?i)Exams T" + str(t) + "([0-9]+ (jan|feb|mar|apr|may|june|july|aug|sep|oct|nov|dec))", table)
-    #             if start_week and exam_week:
-    #                 break
-
-    #         start_week_date = datetime.strptime(start_week.group(1) + " 2019", "%d %b %Y")
-    #         exam_week_date = datetime.strptime(start_week.group(1) + " 2019", "%d %b %Y")
-
-    #         if datetime.now() < exam_week_date:
-    #             return (start_week_date, exam_week_date) 
 
     # parse all selected due dates from course outlines
     def scrape_due_dates(self, id, find_assignments, find_exams, find_milestones, find_labs):

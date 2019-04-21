@@ -1,6 +1,6 @@
-# User class
 from flask_login import UserMixin
 
+# User objects - contains information about user
 class User(UserMixin):
     def __init__(self, id, dummy):
         self._id = id
