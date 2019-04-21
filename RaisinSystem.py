@@ -38,15 +38,12 @@ class RaisinSystem():
             # populating dummy users with courses
             if id == "z1111111":
                 courses.append(Course("COMP1511", BASE_URL + "/COMP1511/19T1/"))
-                courses.append(Course("COMP2521", BASE_URL + "/COMP2521/19T1/"))
-                courses.append(Course("COMP1911", BASE_URL + "/COMP1911/19T1/"))
                 self.add_courses(id, courses)
-                return 3
+                return 1
             elif id == "z3333333":
-                courses.append(Course("COMP2121", BASE_URL + "/COMP2121/19T1/"))
                 courses.append(Course("COMP3311", BASE_URL + "/COMP3311/19T1/"))
                 self.add_courses(id, courses)
-                return 2
+                return 1
         else:
             # scraping list of courses from webcms navbar
             doc = self.navigateTo(id, DASHBOARD_URL)
@@ -189,8 +186,10 @@ class RaisinSystem():
             searches = []
             if find_assignments:
                 searches.append("((?i)(?!.*(released|out))(assignment [0-9]+))")
+                # searches.append("((?i)(?!.*(released|out))(assignment(?! [0-9])))")
+                # searches.append("((?i)(?!.*(released|out))(project(?! [0-9])))")
             if find_exams:
-                searches.append("((?i)([\w-]+ exam\\b))")
+                searches.append("((?i)(?!.*(final))([\w-]+ exam\\b))")
 
             # search everywhere to see if there's X due
             # only if project milestones is selected
@@ -221,7 +220,6 @@ class RaisinSystem():
                                 if (int(w.group(1)) < 12):
                                     self.add_due_date(id, c.name, DueDate(d[0].capitalize(), w.group(1)))
                                     break
-                        # add to the estimator(tm)
 
             # search everywhere to see if there are labs
             # only if labs selected
@@ -241,16 +239,16 @@ class RaisinSystem():
 
             # see if there are assignments with no due dates (a la 2521, thanks for nothing)
             # then estimate the due dates (not the greatest implementation)
-            if find_assignments:
-                test_highest = 0
-                test_assignment_search = re.findall("((?i)(assignment ([0-9]+)))", whole_doc)
-                for t in test_assignment_search:
-                    if not self.is_due_date(id, c.name, t[0].capitalize()):
-                        test_highest = int(t[2])
-                if test_highest == 2:
-                    self.add_due_date(id, c.name, DueDate("Assignment 1 (estimated)", "4"))
-                    self.add_due_date(id, c.name, DueDate("Assignment 2 (estimated)", "9"))
-                elif test_highest == 3:
-                    self.add_due_date(id, c.name, DueDate("Assignment 1 (estimated)", "3"))
-                    self.add_due_date(id, c.name, DueDate("Assignment 2 (estimated)", "6"))
-                    self.add_due_date(id, c.name, DueDate("Assignment 3 (estimated)", "9"))
+            # if find_assignments:
+            #     test_highest = 0
+            #     test_assignment_search = re.findall("((?i)(assignment ([0-9]+)))", whole_doc)
+            #     for t in test_assignment_search:
+            #         if not self.is_due_date(id, c.name, t[0].capitalize()):
+            #             test_highest = int(t[2])
+            #     if test_highest == 2:
+            #         self.add_due_date(id, c.name, DueDate("Assignment 1 (estimated)", "4"))
+            #         self.add_due_date(id, c.name, DueDate("Assignment 2 (estimated)", "9"))
+            #     elif test_highest == 3:
+            #         self.add_due_date(id, c.name, DueDate("Assignment 1 (estimated)", "3"))
+            #         self.add_due_date(id, c.name, DueDate("Assignment 2 (estimated)", "6"))
+            #         self.add_due_date(id, c.name, DueDate("Assignment 3 (estimated)", "9"))

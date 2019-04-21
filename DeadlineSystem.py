@@ -120,7 +120,7 @@ class DeadlineSystem(object):
                 csvFile.write(d.summary+','+d.deadline.strftime('%Y/%m/%d')+','+(d.deadline + timedelta(days=1)).strftime('%Y/%m/%d')+',Yes,'+d.description+','+d.location+'\n')
             csvFile.close()
 
-    # ics (iCal) creator
+    # ics (apple calendar) creator
     def calIcal(self, zid, deadlines):
         c = Calendar()
         for d in deadlines:

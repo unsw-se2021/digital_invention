@@ -103,4 +103,8 @@ def logout():
 @app.route('/calendar.<fileType>')
 @login_required
 def sendcalendar(fileType):
-    return send_file("calendars/" + current_user.id + "." + fileType)
+    # can never be too careful
+    if fileType == "csv":
+        return send_file("calendars/" + current_user.id + ".csv")
+    if fileType == "ics":
+        return send_file("calendars/" + current_user.id + ".ics")
