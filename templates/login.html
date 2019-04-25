@@ -30,10 +30,11 @@
     </form>
 </div>
 {% if error %}
-<div class="row">
+<script>M.toast({html: '{{error}}'})</script>
+<!-- <div class="row">
     <div class="center col l12 s8 offset-s2">
-        <h6>Incorrect zID or password.</h5>
+        <h6>{{ error }}</h5>
     </div>
-</div>
+</div> -->
 {% endif %}
 {% endblock %}

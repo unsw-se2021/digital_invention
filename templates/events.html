@@ -25,7 +25,7 @@
                 <p>
                     <label>
                         <input type="checkbox" class="filled-in checkbox-blue" name="assignments" checked/>
-                        <span>Assignments</span>
+                        <span class="black-text">Assignments</span>
                     </label>
                 </p>
             </div>
@@ -33,7 +33,7 @@
                 <p>
                     <label>
                         <input type="checkbox" class="filled-in checkbox-blue" name="exams" checked/>
-                        <span>Exams</span>
+                        <span class="black-text">Exams</span>
                     </label>
                 </p>
             </div>
@@ -41,7 +41,7 @@
                 <p>
                     <label>
                         <input type="checkbox" class="filled-in checkbox-blue" name="milestones" checked/>
-                        <span>Project milestones</span>
+                        <span class="black-text">Project milestones</span>
                     </label>
                 </p>
             </div>
@@ -49,7 +49,7 @@
                 <p>
                     <label>
                         <input type="checkbox" class="filled-in checkbox-blue" name="labs" checked/>
-                        <span>Labs</span>
+                        <span class="black-text">Labs</span>
                     </label>
                 </p>
             </div>
@@ -74,4 +74,8 @@
     </div>
 </container>
 <script type="text/javascript" src="{{ url_for('static', filename='js/loader.js') }}"></script>
+
+{% if error %}
+<script>M.toast({html: '{{error}}'})</script>
+{% endif %}
 {% endblock %}
